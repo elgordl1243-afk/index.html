@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Control de Stock iPhone — Cloud</title>
+  <title>Control de Stock iPhone — Cloud (Sin Login)</title>
 
   <style>
     :root{
@@ -29,15 +29,10 @@
     .wrap{ max-width:1200px; margin:0 auto; padding:22px; }
     header{
       display:flex; gap:14px; align-items:flex-start; justify-content:space-between;
-      flex-wrap:wrap;
-      margin-bottom:16px;
+      flex-wrap:wrap; margin-bottom:16px;
     }
     .brand{ display:flex; flex-direction:column; gap:8px; }
     .brand h1{ margin:0; font-size:20px; display:flex; align-items:center; gap:10px; }
-
-    .topbar{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end;
-    }
 
     .pill{
       display:inline-flex; align-items:center; gap:8px;
@@ -50,10 +45,7 @@
       width:max-content;
     }
     .pill strong{ color:var(--text); font-weight:800; }
-    .dot{
-      width:8px; height:8px; border-radius:999px; display:inline-block;
-      background: rgba(255,255,255,.35);
-    }
+    .dot{ width:8px; height:8px; border-radius:999px; display:inline-block; background: rgba(255,255,255,.35); }
     .dot.ok{ background: rgba(52,211,153,.85); }
     .dot.warn{ background: rgba(251,191,36,.85); }
     .dot.bad{ background: rgba(251,113,133,.85); }
@@ -76,10 +68,11 @@
       border-color: rgba(110,231,255,.35);
     }
     button.danger{ border-color: rgba(251,113,133,.35); }
-    button:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+
+    .topbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
 
     .grid{ display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }
-    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
+    @media (max-width: 980px){ .grid{ grid-template-columns:1fr; } }
 
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
@@ -94,7 +87,7 @@
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       flex-wrap:wrap;
     }
-    .card .hd h2{ margin:0; font-size:14px; color:var(--text); }
+    .card .hd h2{ margin:0; font-size:14px; }
     .card .bd{ padding:14px; }
 
     .stats{
@@ -121,22 +114,16 @@
       gap:10px;
       margin-bottom:10px;
     }
-    .field{
-      grid-column: span 3;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
+    .field{ grid-column: span 3; display:flex; flex-direction:column; gap:6px; }
     .field.span-2{ grid-column: span 2; }
     .field.span-3{ grid-column: span 3; }
     .field.span-4{ grid-column: span 4; }
-    .field.span-5{ grid-column: span 5; }
     .field.span-6{ grid-column: span 6; }
     .field.span-12{ grid-column: span 12; }
 
     @media (max-width: 980px){
       .field{ grid-column: span 6; }
-      .field.span-2,.field.span-3,.field.span-4,.field.span-5,.field.span-6{ grid-column: span 6; }
+      .field.span-2,.field.span-3,.field.span-4,.field.span-6{ grid-column: span 6; }
       .field.span-12{ grid-column: span 12; }
     }
     @media (max-width: 520px){ .field{ grid-column: span 12; } }
@@ -169,6 +156,7 @@
       display:inline-flex; gap:6px; align-items:center;
     }
     .chip b{ color:var(--text); }
+
     .toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .tablewrap{ overflow:auto; border-radius: 16px; border:1px solid rgba(36,48,74,.7); }
     table{
@@ -215,15 +203,7 @@
     .split{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
     .row-actions{ display:flex; gap:8px; flex-wrap:wrap; }
     .row-actions button{ padding:8px 10px; border-radius:10px; }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:11px;
-      padding:2px 6px;
-      border:1px solid rgba(36,48,74,.7);
-      border-radius:8px;
-      color:var(--muted);
-      background: rgba(0,0,0,.2);
-    }
+
     .inputWithBtn{ display:flex; gap:8px; }
     .inputWithBtn input{ flex:1; }
 
@@ -257,57 +237,12 @@
     .closex{ border-radius:999px; padding:8px 10px; }
 
     /* Scanner */
-    .scannerWrap{
-      display:grid;
-      grid-template-columns: 1fr .9fr;
-      gap:12px;
-      align-items:start;
-    }
+    .scannerWrap{ display:grid; grid-template-columns: 1fr .9fr; gap:12px; align-items:start; }
     @media (max-width: 980px){ .scannerWrap{ grid-template-columns:1fr; } }
-    video{
-      width:100%;
-      border-radius:16px;
-      border:1px solid rgba(36,48,74,.7);
-      background:#000;
-    }
-    .scanBox{
-      border:1px solid rgba(36,48,74,.7);
-      border-radius:16px;
-      padding:12px;
-      background: rgba(0,0,0,.18);
-    }
+    video{ width:100%; border-radius:16px; border:1px solid rgba(36,48,74,.7); background:#000; }
+    .scanBox{ border:1px solid rgba(36,48,74,.7); border-radius:16px; padding:12px; background: rgba(0,0,0,.18); }
     .list{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
     .list button{ justify-content:space-between; width:100%; }
-
-    /* Login */
-    .loginGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    @media (max-width: 800px){ .loginGrid{ grid-template-columns:1fr; } }
-    .msg{
-      padding:10px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(36,48,74,.7);
-      background: rgba(0,0,0,.18);
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-    .msg b{ color: var(--text); }
-    .err{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(251,113,133,.35);
-      background: rgba(251,113,133,.08);
-      color: var(--text);
-      font-size: 12px;
-      line-height: 1.35;
-      display:none;
-    }
-    .err.show{ display:block; }
   </style>
 </head>
 
@@ -315,10 +250,10 @@
   <div class="wrap">
     <header>
       <div class="brand">
-        <h1>📱 Control de Stock iPhone — Cloud</h1>
+        <h1>📱 Control de Stock iPhone — Cloud (Sin Login)</h1>
         <div class="pill">
           <span id="cloudDot" class="dot warn"></span>
-          <span id="cloudText">Desconectado</span>
+          <span id="cloudText">Conectando…</span>
           <span class="muted">•</span>
           TC global (ARS/USD): <strong id="tcPill">—</strong>
           <span class="muted">•</span>
@@ -327,17 +262,14 @@
       </div>
 
       <div class="topbar">
-        <button id="btnLogin" class="primary">🔐 Iniciar sesión</button>
-        <button id="btnLogout" class="danger" disabled>Salir</button>
-        <button id="btnExportJson" disabled>Export JSON</button>
-        <button id="btnImportJson" disabled>Import JSON</button>
-        <button id="btnExportCsv" disabled>Export CSV</button>
-        <button id="btnClear" class="danger" disabled>Borrar todo</button>
+        <button id="btnExportJson">Export JSON</button>
+        <button id="btnImportJson">Import JSON</button>
+        <button id="btnExportCsv">Export CSV</button>
+        <button id="btnClear" class="danger">Borrar todo</button>
       </div>
     </header>
 
     <div class="grid">
-      <!-- Left -->
       <section class="card">
         <div class="hd">
           <h2>Alta / Edición de equipo</h2>
@@ -428,7 +360,6 @@
               <div class="field span-3">
                 <label>Tipo de cambio global (ARS/USD)</label>
                 <input id="rate" type="number" min="0" step="0.01" placeholder="Ej: 1200" required />
-                <div class="hint">Cambialo cuando quieras: recalcula todo (menos lo vendido).</div>
               </div>
 
               <div class="field span-2">
@@ -467,7 +398,6 @@
         </div>
       </section>
 
-      <!-- Right -->
       <section class="card">
         <div class="hd">
           <h2>Stock</h2>
@@ -521,55 +451,10 @@
           <div style="height:10px"></div>
           <div class="split">
             <div class="hint" id="countNote">—</div>
-            <div class="hint" id="syncNote">Iniciá sesión para sincronizar.</div>
+            <div class="hint" id="syncNote">—</div>
           </div>
         </div>
       </section>
-    </div>
-  </div>
-
-  <!-- LOGIN modal -->
-  <div class="modal" id="modalLogin">
-    <div class="panel">
-      <div class="ph">
-        <h3>Iniciar sesión</h3>
-        <button class="closex" id="btnCloseLogin">Cerrar</button>
-      </div>
-      <div class="pb">
-        <div class="loginGrid">
-          <div>
-            <div class="row">
-              <div class="field span-12">
-                <label>Email</label>
-                <input id="loginEmail" type="email" placeholder="tuemail@gmail.com" autocomplete="email" />
-              </div>
-              <div class="field span-12">
-                <label>Contraseña</label>
-                <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" />
-                <div class="hint">Mínimo 6 caracteres.</div>
-              </div>
-            </div>
-            <div class="row-actions">
-              <button class="primary" id="btnDoLogin">Entrar</button>
-              <button id="btnDoRegister">Crear cuenta</button>
-            </div>
-
-            <div id="loginErr" class="err"></div>
-          </div>
-
-          <div class="msg">
-            <b>Si te da error “configuration-not-found”:</b><br>
-            Entrá a Firebase → <b>Authentication</b> → “Get started” → habilitá <b>Email/Password</b>.<br><br>
-
-            <b>Si te da error “unauthorized-domain”:</b><br>
-            Firebase → Authentication → Settings → Authorized domains<br>
-            Agregá: <span class="kbd">iphone32.netlify.app</span><br><br>
-
-            <b>Firestore Rules recomendadas:</b><br>
-            <span class="kbd">match /users/{uid}/{document=**} …</span>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -582,7 +467,7 @@
       </div>
       <div class="pb">
         <p class="hint" style="margin-top:0">
-          Pegá el JSON exportado y tocá <b>Importar</b>. Reemplaza el stock en la nube (para tu usuario).
+          Pegá el JSON exportado y tocá <b>Importar</b>. Reemplaza el stock en la nube.
         </p>
         <textarea id="importArea" placeholder='{"settings":{"rate":1200},"items":[...]}'></textarea>
         <div style="height:10px"></div>
@@ -623,10 +508,9 @@
     </div>
   </div>
 
-  <!-- Firebase + App -->
   <script type="module">
     /**********************************************************************
-     * ✅ Firebase Config (TU CONFIG)
+     * Firebase Config (TU CONFIG)
      **********************************************************************/
     const firebaseConfig = {
       apiKey: "AIzaSyBRQTpxrP3-0DiRD5N3knn9wGgwYX68H4w",
@@ -639,54 +523,35 @@
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc,
-      onSnapshot
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
     /**********************************************************************
-     * ✅ State (en un doc por usuario)
+     * ✅ Documento “único” compartido (multi-dispositivo sin login)
+     * Path: /public/stockMain
      **********************************************************************/
+    const STOCK_DOC = doc(db, "public", "stockMain"); // mismo para todos
+
     const state = { settings: { rate: 0 }, items: [] };
-    let uid = null;
-    let unsub = null;
 
     const $ = (id) => document.getElementById(id);
 
     const cloudDot = $("cloudDot");
     const cloudText = $("cloudText");
     const syncNote = $("syncNote");
-
-    const btnLogin = $("btnLogin");
-    const btnLogout = $("btnLogout");
+    const tcPill = $("tcPill");
 
     const btnExportJson = $("btnExportJson");
     const btnImportJson = $("btnImportJson");
     const btnExportCsv = $("btnExportCsv");
     const btnClear = $("btnClear");
 
-    const modalLogin = $("modalLogin");
-    const btnCloseLogin = $("btnCloseLogin");
-    const loginEmail = $("loginEmail");
-    const loginPass = $("loginPass");
-    const btnDoLogin = $("btnDoLogin");
-    const btnDoRegister = $("btnDoRegister");
-    const loginErr = $("loginErr");
+    const modalImport = $("modalImport");
+    const btnCloseImport = $("btnCloseImport");
+    const btnDoImport = $("btnDoImport");
+    const importArea = $("importArea");
 
     const form = $("form");
     const model = $("model");
@@ -708,18 +573,12 @@
     const tbody = $("tbody");
     const stats = $("stats");
     const calcChips = $("calcChips");
-    const tcPill = $("tcPill");
     const q = $("q");
     const filterStatus = $("filterStatus");
     const sortBy = $("sortBy");
     const countNote = $("countNote");
     const saveHint = $("saveHint");
     const btnReset = $("btnReset");
-
-    const modalImport = $("modalImport");
-    const btnCloseImport = $("btnCloseImport");
-    const btnDoImport = $("btnDoImport");
-    const importArea = $("importArea");
 
     const btnScanImei = $("btnScanImei");
     const modalScan = $("modalScan");
@@ -729,12 +588,8 @@
     const foundList = $("foundList");
     const scanStatus = $("scanStatus");
 
-    // init
-    setEnabled(false);
     if (!dateIn.value) dateIn.value = toISODate(new Date());
     if (!feesArs.value) feesArs.value = "0";
-
-    const userDoc = (uid) => doc(db, "users", uid, "app", "stock");
 
     function setCloudStatus(kind, text){
       cloudText.textContent = text;
@@ -742,147 +597,52 @@
       cloudDot.classList.add(kind);
     }
 
-    function showLoginError(msg){
-      loginErr.textContent = msg;
-      loginErr.classList.add("show");
-    }
-    function clearLoginError(){
-      loginErr.textContent = "";
-      loginErr.classList.remove("show");
+    // Cargar / escuchar nube
+    setCloudStatus("warn","Conectando…");
+    syncNote.textContent = "Conectando a Firestore…";
+
+    const initial = await getDoc(STOCK_DOC);
+    if (!initial.exists()) {
+      await setDoc(STOCK_DOC, { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
     }
 
+    onSnapshot(STOCK_DOC, (snap) => {
+      const d = snap.data() || {};
+      state.settings = d.settings || { rate: 0 };
+      state.items = Array.isArray(d.items) ? d.items : [];
+      rate.value = state.settings.rate || "";
+      setCloudStatus("ok","Conectado");
+      syncNote.textContent = "✅ Sincronizado";
+      render();
+    }, (err) => {
+      console.error(err);
+      setCloudStatus("bad","Error nube");
+      syncNote.textContent = "❌ Error de sincronización";
+      alert("Error de Firestore. Revisá Rules (deben permitir read/write).");
+    });
+
+    // Guardado con debounce
     let saveTimer = null;
-    async function saveCloudDebounced() {
-      if (!uid) return;
+    async function saveCloudDebounced(){
+      setCloudStatus("warn","Guardando…");
       syncNote.textContent = "Guardando…";
-      setCloudStatus("warn", "Conectado • Guardando…");
-
       clearTimeout(saveTimer);
       saveTimer = setTimeout(async () => {
-        try {
-          await setDoc(userDoc(uid), {
-            settings: state.settings,
-            items: state.items,
-            updatedAt: Date.now()
-          }, { merge: true });
-
+        try{
+          await setDoc(STOCK_DOC, { settings: state.settings, items: state.items, updatedAt: Date.now() }, { merge:true });
+          setCloudStatus("ok","Conectado");
           syncNote.textContent = "✅ Guardado";
-          setCloudStatus("ok", "Conectado • Guardado");
-        } catch (e) {
+        }catch(e){
           console.error(e);
+          setCloudStatus("bad","Error nube");
           syncNote.textContent = "❌ Error guardando";
-          setCloudStatus("bad", "Error de nube");
-          alert("Error guardando en la nube: " + (e.message || String(e)));
+          alert("No se pudo guardar. Revisá Rules.");
         }
       }, 450);
     }
 
-    // Modals
-    btnLogin.addEventListener("click", () => openModal(modalLogin));
-    btnCloseLogin.addEventListener("click", () => closeModal(modalLogin));
-    modalLogin.addEventListener("click", (e) => { if (e.target === modalLogin) closeModal(modalLogin); });
-
-    // ✅ LOGIN (corregido: valida email + pass SI O SI)
-    btnDoLogin.addEventListener("click", async () => {
-      clearLoginError();
-
-      const email = (loginEmail.value || "").trim();
-      const pass = (loginPass.value || "");
-
-      if (!email) return showLoginError("Ingresá tu email.");
-      if (!pass || pass.length < 6) return showLoginError("Ingresá una contraseña (mínimo 6 caracteres).");
-
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        closeModal(modalLogin);
-      } catch (e) {
-        console.error(e);
-        showLoginError(humanAuthError(e));
-      }
-    });
-
-    // ✅ REGISTER (corregido: valida email + pass SI O SI)
-    btnDoRegister.addEventListener("click", async () => {
-      clearLoginError();
-
-      const email = (loginEmail.value || "").trim();
-      const pass = (loginPass.value || "");
-
-      if (!email) return showLoginError("Ingresá tu email.");
-      if (!pass || pass.length < 6) return showLoginError("Creá una contraseña (mínimo 6 caracteres).");
-
-      try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-        closeModal(modalLogin);
-      } catch (e) {
-        console.error(e);
-        showLoginError(humanAuthError(e));
-      }
-    });
-
-    // Enter key submits login
-    loginPass.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter") btnDoLogin.click();
-    });
-
-    btnLogout.addEventListener("click", async () => {
-      await signOut(auth);
-    });
-
-    // AUTH state
-    onAuthStateChanged(auth, async (user) => {
-      if (unsub) { unsub(); unsub = null; }
-
-      if (!user) {
-        uid = null;
-        setEnabled(false);
-        setCloudStatus("warn", "Desconectado");
-        syncNote.textContent = "Iniciá sesión para sincronizar.";
-        state.settings = { rate: 0 };
-        state.items = [];
-        rate.value = "";
-        render();
-        return;
-      }
-
-      uid = user.uid;
-      setEnabled(true);
-      setCloudStatus("warn", "Conectado • Cargando…");
-      syncNote.textContent = "Cargando desde la nube…";
-
-      const snap = await getDoc(userDoc(uid));
-      if (!snap.exists()) {
-        await setDoc(userDoc(uid), { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
-      }
-
-      unsub = onSnapshot(userDoc(uid), (docSnap) => {
-        const data = docSnap.data() || {};
-        state.settings = data.settings || { rate: 0 };
-        state.items = Array.isArray(data.items) ? data.items : [];
-
-        rate.value = state.settings.rate || "";
-        setCloudStatus("ok", "Conectado");
-        syncNote.textContent = "✅ Sincronizado";
-        render();
-      }, (err) => {
-        console.error(err);
-        setCloudStatus("bad", "Error de nube");
-        syncNote.textContent = "❌ Error de sincronización";
-      });
-    });
-
-    function setEnabled(on){
-      [btnLogout, btnExportJson, btnImportJson, btnExportCsv, btnClear].forEach(b => b.disabled = !on);
-      btnLogin.disabled = on;
-
-      Array.from(form.querySelectorAll("input,select,button")).forEach(el => el.disabled = !on);
-      q.disabled = !on;
-      filterStatus.disabled = !on;
-      sortBy.disabled = !on;
-    }
-
     /**********************************************************************
-     * ✅ TC CONGELADO EN VENDIDO
+     * TC congelado al vender
      **********************************************************************/
     function effectiveRateFor(it){
       const globalR = num(rate.value) || num(state.settings.rate) || 0;
@@ -890,7 +650,7 @@
       return globalR;
     }
 
-    function calcWithRate(it) {
+    function calcWithRate(it){
       const r = effectiveRateFor(it);
       const cArs = (it.costUsd || 0) * r;
       const pArs = (it.priceUsd || 0) * r;
@@ -899,7 +659,7 @@
       return { r, cArs, pArs, gArs, gUsd };
     }
 
-    function recalcChips() {
+    function recalcChips(){
       const r = num(rate.value);
       tcPill.textContent = r ? fmtARS(r) : "—";
       const cUSD = num(costUsd.value);
@@ -924,12 +684,10 @@
       render();
       await saveCloudDebounced();
     }));
-    ["input","change"].forEach(ev => {
-      [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener(ev, recalcChips));
-    });
+    ["input","change"].forEach(ev => [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener(ev, recalcChips)));
 
     /**********************************************************************
-     * ✅ Guardar item: congela TC si pasa a Vendido
+     * Guardar item
      **********************************************************************/
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -944,7 +702,7 @@
         saveHint.textContent = "✅ Equipo actualizado.";
       } else {
         state.items.unshift(item);
-        saveHint.textContent = "✅ Equipo agregado al stock.";
+        saveHint.textContent = "✅ Equipo agregado.";
       }
 
       await saveCloudDebounced();
@@ -954,7 +712,7 @@
 
     btnReset.addEventListener("click", () => resetForm(true));
 
-    function resetForm(clearRate) {
+    function resetForm(clearRate){
       editingId.value = "";
       form.reset();
       dateIn.value = toISODate(new Date());
@@ -965,10 +723,8 @@
       recalcChips();
     }
 
-    function buildItemFromForm() {
+    function buildItemFromForm(){
       const globalR = num(rate.value);
-      if (!uid) { alert("Iniciá sesión para usar la app."); return null; }
-
       if (!model.value || !storage.value || !color.value || !globalR) {
         alert("Completá: Modelo, GB, Color y Tipo de cambio.");
         return null;
@@ -987,13 +743,11 @@
       const newStatus = status.value;
       const prevStatus = prev?.status || null;
 
-      // Freeze rule
       let soldRate = prev?.soldRate ?? null;
       let soldAt = prev?.soldAt ?? null;
 
       const becomingSold = (newStatus === "Vendido") && (prevStatus !== "Vendido");
       const isNewSold = (!prev && newStatus === "Vendido");
-
       if (becomingSold || isNewSold) {
         soldRate = globalR;
         soldAt = Date.now();
@@ -1022,7 +776,7 @@
       };
     }
 
-    function editItem(id) {
+    function editItem(id){
       const it = state.items.find(x => x.id === id);
       if (!it) return;
 
@@ -1044,22 +798,21 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
       saveHint.textContent = it.status === "Vendido" && num(it.soldRate) > 0
         ? `✏️ Editando vendido (TC congelado: ${fmtARS(num(it.soldRate))}).`
-        : "✏️ Editando equipo. Guardá para aplicar cambios.";
+        : "✏️ Editando equipo.";
       recalcChips();
     }
 
-    async function delItem(id) {
+    async function delItem(id){
       const it = state.items.find(x => x.id === id);
       if (!it) return;
-      const ok = confirm(`¿Borrar "${it.model} ${it.storageGB}GB ${it.color}"?`);
-      if (!ok) return;
+      if (!confirm(`¿Borrar "${it.model} ${it.storageGB}GB ${it.color}"?`)) return;
 
       state.items = state.items.filter(x => x.id !== id);
       await saveCloudDebounced();
       render();
     }
 
-    async function toggleStatus(id) {
+    async function toggleStatus(id){
       const it = state.items.find(x => x.id === id);
       if (!it) return;
 
@@ -1067,12 +820,10 @@
       const idx = order.indexOf(it.status);
       const next = order[(idx + 1) % order.length];
 
-      // If transitioning to Vendido -> freeze rate
       if (next === "Vendido" && it.status !== "Vendido") {
         it.soldRate = num(rate.value) || num(state.settings.rate) || 0;
         it.soldAt = Date.now();
       }
-
       it.status = next;
       it.updatedAt = Date.now();
 
@@ -1081,23 +832,20 @@
     }
 
     /**********************************************************************
-     * ✅ Render / stats / filters
+     * Render / filtros
      **********************************************************************/
-    function applyQuerySort(items) {
+    function applyQuerySort(items){
       const qq = (q.value || "").trim().toLowerCase();
       const st = filterStatus.value;
 
       let out = items.filter(it => {
         if (st && it.status !== st) return false;
         if (!qq) return true;
-        const blob = [
-          it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes
-        ].join(" ").toLowerCase();
+        const blob = [it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes].join(" ").toLowerCase();
         return blob.includes(qq);
       });
 
-      const sort = sortBy.value;
-      const [key, dir] = sort.split("_");
+      const [key, dir] = sortBy.value.split("_");
       const asc = dir === "asc";
 
       out.sort((a,b) => {
@@ -1115,15 +863,14 @@
         return 0;
       });
 
-      countNote.textContent = `${out.length} resultado(s) • Total registros: ${state.items.length}`;
+      countNote.textContent = `${out.length} resultado(s) • Total: ${state.items.length}`;
       return out;
     }
 
-    function renderTable(items) {
+    function renderTable(items){
       tbody.innerHTML = items.map(it => {
         const { r, cArs, pArs, gArs, gUsd } = calcWithRate(it);
-        const name = `${escapeHtml(it.model)} • ${it.storageGB}GB • ${escapeHtml(it.color)}` +
-          (it.battery !== null ? ` • 🔋${it.battery}%` : "");
+        const name = `${escapeHtml(it.model)} • ${it.storageGB}GB • ${escapeHtml(it.color)}` + (it.battery !== null ? ` • 🔋${it.battery}%` : "");
         const imeiTxt = it.imei ? escapeHtml(it.imei) : `<span class="mini">—</span>`;
         const profitClass = gArs >= 0 ? "b-ok" : "b-bad";
         const rateNote = it.status === "Vendido"
@@ -1139,18 +886,9 @@
             </td>
             <td class="mini">${imeiTxt}</td>
             <td>${badgeFor(it.status)}</td>
-            <td>
-              <div class="money"><b>${fmtUSD(it.costUsd)}</b></div>
-              <div class="mini money">${fmtARS(cArs)}</div>
-            </td>
-            <td>
-              <div class="money"><b>${fmtUSD(it.priceUsd)}</b></div>
-              <div class="mini money">${fmtARS(pArs)}</div>
-            </td>
-            <td>
-              <span class="badge ${profitClass}">${fmtARS(gArs)}</span>
-              <div class="mini money">${fmtUSD(gUsd)}</div>
-            </td>
+            <td><div class="money"><b>${fmtUSD(it.costUsd)}</b></div><div class="mini money">${fmtARS(cArs)}</div></td>
+            <td><div class="money"><b>${fmtUSD(it.priceUsd)}</b></div><div class="mini money">${fmtARS(pArs)}</div></td>
+            <td><span class="badge ${profitClass}">${fmtARS(gArs)}</span><div class="mini money">${fmtUSD(gUsd)}</div></td>
             <td class="mini">${escapeHtml(it.dateIn || "—")}</td>
             <td>
               <div class="row-actions">
@@ -1168,7 +906,7 @@
       tbody.querySelectorAll("[data-toggle]").forEach(btn => btn.addEventListener("click", () => toggleStatus(btn.dataset.toggle)));
     }
 
-    function renderStats() {
+    function renderStats(){
       const items = state.items;
       const avail = items.filter(x => x.status === "Disponible");
       const reserved = items.filter(x => x.status === "Reservado");
@@ -1178,9 +916,7 @@
 
       const investedARS = sumCalc([...avail, ...reserved], (c) => c.cArs);
       const potentialProfitARS = sumCalc([...avail, ...reserved], (c) => c.gArs);
-
       const soldProfitARS = sumCalc(sold, (c) => c.gArs);
-      const soldRevenueARS = sumCalc(sold, (c) => c.pArs);
 
       stats.innerHTML = `
         ${stat("Disponibles", avail.length, "En stock")}
@@ -1189,18 +925,12 @@
         ${stat("Invertido (ARS)", fmtARS(investedARS), "Disp + reserv")}
         ${stat("Ganancia potencial (ARS)", fmtARS(potentialProfitARS), "No incluye vendidos")}
         ${stat("Ganancia vendida (ARS)", fmtARS(soldProfitARS), "Histórico")}
-        ${stat("Facturación vendida (ARS)", fmtARS(soldRevenueARS), "Histórico")}
         ${stat("Registros", items.length, "Total")}
+        ${stat("TC global", rate.value ? fmtARS(num(rate.value)) : "—", "Actual")}
       `;
     }
 
-    function render() {
-      renderStats();
-      renderTable(applyQuerySort([...state.items]));
-      recalcChips();
-    }
-
-    function stat(k, v, s) {
+    function stat(k, v, s){
       return `
         <div class="stat">
           <div class="k">${escapeHtml(k)}</div>
@@ -1210,10 +940,16 @@
       `;
     }
 
-    function badgeFor(st) {
+    function badgeFor(st){
       if (st === "Disponible") return `<span class="badge b-ok">Disponible</span>`;
       if (st === "Reservado") return `<span class="badge b-warn">Reservado</span>`;
       return `<span class="badge b-bad">Vendido</span>`;
+    }
+
+    function render(){
+      renderStats();
+      renderTable(applyQuerySort([...state.items]));
+      recalcChips();
     }
 
     [q, filterStatus, sortBy].forEach(el => {
@@ -1222,7 +958,7 @@
     });
 
     /**********************************************************************
-     * ✅ Export / Import / Clear
+     * Export / Import / Clear
      **********************************************************************/
     btnExportJson.addEventListener("click", () => {
       const payload = JSON.stringify({ settings: state.settings, items: state.items }, null, 2);
@@ -1230,19 +966,13 @@
     });
 
     btnExportCsv.addEventListener("click", () => {
-      const headers = [
-        "id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn",
-        "costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"
-      ];
+      const headers = ["id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn","costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"];
       const rows = state.items.map(it => headers.map(h => csvCell(it[h])));
       const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
       downloadText(csv, `stock-${toISODate(new Date())}.csv`, "text/csv");
     });
 
-    btnImportJson.addEventListener("click", () => {
-      importArea.value = "";
-      openModal(modalImport);
-    });
+    btnImportJson.addEventListener("click", () => { importArea.value = ""; openModal(modalImport); });
     btnCloseImport.addEventListener("click", () => closeModal(modalImport));
     modalImport.addEventListener("click", (e) => { if (e.target === modalImport) closeModal(modalImport); });
 
@@ -1263,8 +993,7 @@
     });
 
     btnClear.addEventListener("click", async () => {
-      const ok = confirm("Esto borra TODO el stock en la nube (para tu usuario). ¿Continuar?");
-      if (!ok) return;
+      if (!confirm("Esto borra TODO el stock en la nube. ¿Continuar?")) return;
       state.items = [];
       state.settings = { rate: num(rate.value) || 0 };
       await saveCloudDebounced();
@@ -1272,45 +1001,29 @@
     });
 
     /**********************************************************************
-     * ✅ Scanner (BarcodeDetector)
+     * Scanner (BarcodeDetector)
      **********************************************************************/
     function openModal(m){ m.classList.add("open"); }
     function closeModal(m){ m.classList.remove("open"); }
 
-    let stream = null;
-    let detector = null;
-    let scanTimer = null;
+    let stream = null, detector = null, scanTimer = null;
     const seen = new Set();
 
     btnScanImei.addEventListener("click", async () => {
       try {
-        if (!("mediaDevices" in navigator) || !navigator.mediaDevices.getUserMedia) {
-          alert("Este navegador no permite cámara.");
-          return;
-        }
-        if (!("BarcodeDetector" in window)) {
-          alert("Tu navegador no soporta escaneo nativo. Probá Chrome en Android/PC.");
-          return;
-        }
+        if (!navigator.mediaDevices?.getUserMedia) return alert("Este navegador no permite cámara.");
+        if (!("BarcodeDetector" in window)) return alert("No soporta escaneo nativo. Probá Chrome.");
 
-        detector = new BarcodeDetector({
-          formats: ["qr_code","code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","data_matrix","pdf417"]
-        });
-
+        detector = new BarcodeDetector({ formats: ["qr_code","code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","data_matrix","pdf417"] });
         openModal(modalScan);
         foundList.innerHTML = "";
         scanStatus.textContent = "Iniciando cámara…";
         seen.clear();
 
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
-          audio: false
-        });
-
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
         video.srcObject = stream;
         await video.play();
         scanStatus.textContent = "Escaneando…";
-
         scanLoop();
       } catch (err) {
         console.error(err);
@@ -1325,11 +1038,9 @@
 
     function stopScan(){
       if (scanTimer) { cancelAnimationFrame(scanTimer); scanTimer = null; }
-      if (video) video.pause();
-      if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-        stream = null;
-      }
+      video?.pause?.();
+      stream?.getTracks?.().forEach(t => t.stop());
+      stream = null;
       scanStatus.textContent = "Detenido.";
     }
 
@@ -1338,20 +1049,16 @@
         scanTimer = requestAnimationFrame(scanLoop);
         return;
       }
-
       try {
         const barcodes = await detector.detect(video);
         for (const bc of barcodes) {
           const raw = (bc.rawValue || "").trim();
-          if (!raw) continue;
-          if (seen.has(raw)) continue;
+          if (!raw || seen.has(raw)) continue;
           seen.add(raw);
-
           addFound(raw);
           scanStatus.textContent = `Detectado: ${raw}`;
         }
-      } catch (e) {}
-
+      } catch {}
       scanTimer = requestAnimationFrame(scanLoop);
     }
 
@@ -1368,39 +1075,15 @@
     }
 
     /**********************************************************************
-     * ✅ Helpers
+     * Helpers
      **********************************************************************/
-    function num(v) {
-      const n = Number(String(v).replace(",", "."));
-      return Number.isFinite(n) ? n : 0;
-    }
-    function clampInt(n, min, max){
-      n = Math.round(n);
-      return Math.max(min, Math.min(max, n));
-    }
-    function fmtARS(n){
-      const v = Number.isFinite(n) ? n : 0;
-      return v.toLocaleString("es-AR", { style:"currency", currency:"ARS", maximumFractionDigits: 0 });
-    }
-    function fmtUSD(n){
-      const v = Number.isFinite(n) ? n : 0;
-      return v.toLocaleString("es-AR", { style:"currency", currency:"USD", maximumFractionDigits: 2 });
-    }
-    function toISODate(d){
-      const z = new Date(d);
-      const y = z.getFullYear();
-      const m = String(z.getMonth()+1).padStart(2,"0");
-      const day = String(z.getDate()).padStart(2,"0");
-      return `${y}-${m}-${day}`;
-    }
-    function cryptoId(){
-      return (crypto?.randomUUID ? crypto.randomUUID() : ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16)));
-    }
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, (c) => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[c]));
-    }
+    function num(v){ const n = Number(String(v).replace(",", ".")); return Number.isFinite(n) ? n : 0; }
+    function clampInt(n, min, max){ n = Math.round(n); return Math.max(min, Math.min(max, n)); }
+    function fmtARS(n){ return (Number.isFinite(n)?n:0).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}); }
+    function fmtUSD(n){ return (Number.isFinite(n)?n:0).toLocaleString("es-AR",{style:"currency",currency:"USD",maximumFractionDigits:2}); }
+    function toISODate(d){ const z=new Date(d),y=z.getFullYear(),m=String(z.getMonth()+1).padStart(2,"0"),day=String(z.getDate()).padStart(2,"0"); return `${y}-${m}-${day}`; }
+    function cryptoId(){ return (crypto?.randomUUID ? crypto.randomUUID() : ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16))); }
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
     function downloadText(text, filename, mime){
       const blob = new Blob([text], { type: mime });
       const a = document.createElement("a");
@@ -1416,23 +1099,6 @@
       const escaped = s.replace(/"/g,'""');
       return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
     }
-
-    // Mensajes “humanos” para errores Auth
-    function humanAuthError(e){
-      const code = e?.code || "";
-      if (code === "auth/missing-password") return "Falta la contraseña. Escribila (mínimo 6 caracteres).";
-      if (code === "auth/weak-password") return "Contraseña débil. Usá mínimo 6 caracteres.";
-      if (code === "auth/invalid-email") return "Email inválido. Revisá el formato.";
-      if (code === "auth/email-already-in-use") return "Ese email ya existe. Tocá 'Entrar' en lugar de 'Crear cuenta'.";
-      if (code === "auth/user-not-found") return "Usuario no encontrado. Tocá 'Crear cuenta'.";
-      if (code === "auth/wrong-password") return "Contraseña incorrecta.";
-      if (code === "auth/unauthorized-domain") return "Dominio no autorizado. En Firebase → Authentication → Settings → Authorized domains agregá: iphone32.netlify.app";
-      if (code === "auth/configuration-not-found") return "Auth no está configurado. En Firebase → Authentication → 'Get started' y habilitá Email/Password.";
-      return `Error: ${code || (e?.message || "desconocido")}`;
-    }
-
-    // First render (logged out)
-    render();
   </script>
 </body>
 </html>
