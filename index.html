@@ -3,817 +3,1422 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Control de Stock iPhone — Cloud (Sin Login)</title>
+  <title>Control de Stock iPhone — Cloud</title>
 
   <style>
-    :root{--bg:#0b0d12;--text:#e8ecf6;--muted:#9aa4bf;--line:#24304a;--ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--shadow:0 10px 30px rgba(0,0,0,.35);--radius:18px}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:radial-gradient(1200px 600px at 20% 0%,rgba(110,231,255,.10),transparent 55%),radial-gradient(1200px 600px at 80% 0%,rgba(167,139,250,.10),transparent 55%),var(--bg);color:var(--text)}
-    .wrap{max-width:1200px;margin:0 auto;padding:22px}
-    header{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
-    .brand{display:flex;flex-direction:column;gap:8px}
-    .brand h1{margin:0;font-size:20px;display:flex;align-items:center;gap:10px}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:999px;color:var(--muted);font-size:12px;width:max-content}
-    .pill strong{color:var(--text);font-weight:800}
-    .dot{width:8px;height:8px;border-radius:999px;display:inline-block;background:rgba(255,255,255,.35)}
-    .dot.ok{background:rgba(52,211,153,.85)} .dot.warn{background:rgba(251,191,36,.85)} .dot.bad{background:rgba(251,113,133,.85)}
-    .topbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-    button{border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer;transition:.15s ease;font-weight:800;font-size:13px;display:inline-flex;align-items:center;gap:8px}
-    button:hover{transform:translateY(-1px);border-color:#34507a}
-    button.primary{background:linear-gradient(135deg,rgba(110,231,255,.20),rgba(167,139,250,.20));border-color:rgba(110,231,255,.35)}
-    button.danger{border-color:rgba(251,113,133,.35)}
-    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
-    @media (max-width:980px){.grid{grid-template-columns:1fr}}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-    .card .hd{padding:14px 14px 10px;border-bottom:1px solid rgba(36,48,74,.7);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .card .hd h2{margin:0;font-size:14px}
-    .card .bd{padding:14px}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-    @media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
-    .stat{background:rgba(15,20,34,.7);border:1px solid rgba(36,48,74,.7);border-radius:16px;padding:12px;min-height:74px;display:flex;flex-direction:column;justify-content:space-between}
-    .stat .k{color:var(--muted);font-size:12px}
-    .stat .v{font-size:18px;font-weight:900}
-    .stat .s{color:var(--muted);font-size:12px}
-    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-bottom:10px}
-    .field{grid-column:span 3;display:flex;flex-direction:column;gap:6px}
-    .field.span-2{grid-column:span 2}.field.span-3{grid-column:span 3}.field.span-4{grid-column:span 4}.field.span-6{grid-column:span 6}.field.span-12{grid-column:span 12}
-    @media (max-width:980px){.field{grid-column:span 6}.field.span-2,.field.span-3,.field.span-4,.field.span-6{grid-column:span 6}.field.span-12{grid-column:span 12}}
-    @media (max-width:520px){.field{grid-column:span 12}}
-    label{font-size:12px;color:var(--muted)}
-    input,select,textarea{width:100%;padding:10px 10px;border-radius:12px;border:1px solid rgba(36,48,74,.9);background:rgba(0,0,0,.18);color:var(--text);outline:none;font-size:13px}
-    input:focus,select:focus,textarea:focus{border-color:rgba(110,231,255,.5);box-shadow:0 0 0 3px rgba(110,231,255,.12)}
-    .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
-    .chips{display:flex;flex-wrap:wrap;gap:8px}
-    .chip{padding:6px 10px;border-radius:999px;background:rgba(24,32,58,.75);border:1px solid rgba(36,48,74,.7);font-size:12px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
-    .chip b{color:var(--text)}
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .tablewrap{overflow:auto;border-radius:16px;border:1px solid rgba(36,48,74,.7)}
-    table{width:100%;border-collapse:collapse;min-width:980px;background:rgba(15,20,34,.55)}
-    thead th{text-align:left;font-size:12px;color:var(--muted);font-weight:800;padding:12px 10px;border-bottom:1px solid rgba(36,48,74,.7);position:sticky;top:0;background:rgba(15,20,34,.95);backdrop-filter:blur(6px);white-space:nowrap}
-    tbody td{padding:12px 10px;border-bottom:1px solid rgba(36,48,74,.45);font-size:13px;vertical-align:top}
-    tbody tr:hover{background:rgba(255,255,255,.03)}
-    .badge{display:inline-flex;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid rgba(36,48,74,.7);background:rgba(24,32,58,.75);white-space:nowrap}
-    .b-ok{color:var(--ok);border-color:rgba(52,211,153,.35)} .b-warn{color:var(--warn);border-color:rgba(251,191,36,.35)} .b-bad{color:var(--bad);border-color:rgba(251,113,133,.35)}
-    .mini{color:var(--muted);font-size:12px;white-space:nowrap}
-    .money{font-variant-numeric:tabular-nums;white-space:nowrap}
-    .split{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-    .row-actions{display:flex;gap:8px;flex-wrap:wrap}
-    .row-actions button{padding:8px 10px;border-radius:10px}
-    .inputWithBtn{display:flex;gap:8px}
-    .inputWithBtn input{flex:1}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
-    .modal.open{display:flex}
-    .panel{width:min(920px,100%);background:linear-gradient(180deg,rgba(18,23,38,.98),rgba(15,20,34,.96));border:1px solid rgba(36,48,74,.9);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
-    .panel .ph{padding:14px;border-bottom:1px solid rgba(36,48,74,.7);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .panel .ph h3{margin:0;font-size:14px}
-    .panel .pb{padding:14px}
-    .closex{border-radius:999px;padding:8px 10px}
-    .scannerWrap{display:grid;grid-template-columns:1fr .9fr;gap:12px;align-items:start}
-    @media (max-width:980px){.scannerWrap{grid-template-columns:1fr}}
-    video{width:100%;border-radius:16px;border:1px solid rgba(36,48,74,.7);background:#000}
-    .scanBox{border:1px solid rgba(36,48,74,.7);border-radius:16px;padding:12px;background:rgba(0,0,0,.18)}
-    .list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-    .list button{justify-content:space-between;width:100%}
-    .debug{border:1px solid rgba(36,48,74,.7);border-radius:16px;padding:10px;background:rgba(0,0,0,.18);font-size:12px;color:var(--muted);line-height:1.35}
-    .debug b{color:var(--text)}
+    :root{
+      --bg:#0b0d12;
+      --text:#e8ecf6;
+      --muted:#9aa4bf;
+      --line:#24304a;
+      --ok:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(110,231,255,.10), transparent 55%),
+                  radial-gradient(1200px 600px at 80% 0%, rgba(167,139,250,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{ max-width:1200px; margin:0 auto; padding:22px; }
+    header{
+      display:flex; gap:14px; align-items:flex-start; justify-content:space-between;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .brand{ display:flex; flex-direction:column; gap:8px; }
+    .brand h1{ margin:0; font-size:20px; display:flex; align-items:center; gap:10px; }
+
+    .topbar{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end;
+    }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12px;
+      width:max-content;
+    }
+    .pill strong{ color:var(--text); font-weight:700; }
+    .dot{
+      width:8px; height:8px; border-radius:999px; display:inline-block;
+      background: rgba(255,255,255,.35);
+    }
+    .dot.ok{ background: rgba(52,211,153,.85); }
+    .dot.warn{ background: rgba(251,191,36,.85); }
+    .dot.bad{ background: rgba(251,113,133,.85); }
+
+    button{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition:.15s ease;
+      font-weight:700;
+      font-size:13px;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    button:hover{ transform:translateY(-1px); border-color:#34507a; }
+    button.primary{
+      background: linear-gradient(135deg, rgba(110,231,255,.20), rgba(167,139,250,.20));
+      border-color: rgba(110,231,255,.35);
+    }
+    button.danger{ border-color: rgba(251,113,133,.35); }
+    button:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+
+    .grid{ display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }
+    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(36,48,74,.7);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      flex-wrap:wrap;
+    }
+    .card .hd h2{ margin:0; font-size:14px; color:var(--text); }
+    .card .bd{ padding:14px; }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 900px){ .stats{ grid-template-columns: repeat(2, 1fr);} }
+    .stat{
+      background: rgba(15,20,34,.7);
+      border:1px solid rgba(36,48,74,.7);
+      border-radius: 16px;
+      padding:12px;
+      min-height:74px;
+      display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .stat .k{ color:var(--muted); font-size:12px; }
+    .stat .v{ font-size:18px; font-weight:900; }
+    .stat .s{ color:var(--muted); font-size:12px; }
+
+    .row{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .field{
+      grid-column: span 3;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .field.span-2{ grid-column: span 2; }
+    .field.span-3{ grid-column: span 3; }
+    .field.span-4{ grid-column: span 4; }
+    .field.span-5{ grid-column: span 5; }
+    .field.span-6{ grid-column: span 6; }
+    .field.span-12{ grid-column: span 12; }
+
+    @media (max-width: 980px){
+      .field{ grid-column: span 6; }
+      .field.span-2,.field.span-3,.field.span-4,.field.span-5,.field.span-6{ grid-column: span 6; }
+      .field.span-12{ grid-column: span 12; }
+    }
+    @media (max-width: 520px){ .field{ grid-column: span 12; } }
+
+    label{ font-size:12px; color:var(--muted); }
+    input, select, textarea{
+      width:100%;
+      padding:10px 10px;
+      border-radius: 12px;
+      border:1px solid rgba(36,48,74,.9);
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(110,231,255,.5);
+      box-shadow: 0 0 0 3px rgba(110,231,255,.12);
+    }
+    .hint{ font-size:12px; color:var(--muted); margin-top:6px; }
+
+    .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+    .chip{
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(24,32,58,.75);
+      border:1px solid rgba(36,48,74,.7);
+      font-size:12px;
+      color:var(--muted);
+      display:inline-flex; gap:6px; align-items:center;
+    }
+    .chip b{ color:var(--text); }
+    .toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .tablewrap{ overflow:auto; border-radius: 16px; border:1px solid rgba(36,48,74,.7); }
+    table{
+      width:100%;
+      border-collapse: collapse;
+      min-width: 980px;
+      background: rgba(15,20,34,.55);
+    }
+    thead th{
+      text-align:left;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      padding:12px 10px;
+      border-bottom:1px solid rgba(36,48,74,.7);
+      position:sticky; top:0;
+      background: rgba(15,20,34,.95);
+      backdrop-filter: blur(6px);
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:12px 10px;
+      border-bottom:1px solid rgba(36,48,74,.45);
+      font-size:13px;
+      vertical-align:top;
+    }
+    tbody tr:hover{ background: rgba(255,255,255,.03); }
+    .badge{
+      display:inline-flex;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      border:1px solid rgba(36,48,74,.7);
+      background: rgba(24,32,58,.75);
+      white-space:nowrap;
+    }
+    .b-ok{ color:var(--ok); border-color: rgba(52,211,153,.35); }
+    .b-warn{ color:var(--warn); border-color: rgba(251,191,36,.35); }
+    .b-bad{ color:var(--bad); border-color: rgba(251,113,133,.35); }
+    .mini{ color:var(--muted); font-size:12px; white-space:nowrap; }
+    .money{ font-variant-numeric: tabular-nums; white-space:nowrap; }
+
+    .split{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+    .row-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+    .row-actions button{ padding:8px 10px; border-radius:10px; }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:11px;
+      padding:2px 6px;
+      border:1px solid rgba(36,48,74,.7);
+      border-radius:8px;
+      color:var(--muted);
+      background: rgba(0,0,0,.2);
+    }
+    .inputWithBtn{ display:flex; gap:8px; }
+    .inputWithBtn input{ flex:1; }
+
+    /* Modals */
+    .modal{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:50;
+    }
+    .modal.open{ display:flex; }
+    .panel{
+      width:min(920px, 100%);
+      background: linear-gradient(180deg, rgba(18,23,38,.98), rgba(15,20,34,.96));
+      border:1px solid rgba(36,48,74,.9);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel .ph{
+      padding:14px;
+      border-bottom:1px solid rgba(36,48,74,.7);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      flex-wrap:wrap;
+    }
+    .panel .ph h3{ margin:0; font-size:14px; }
+    .panel .pb{ padding:14px; }
+    .closex{ border-radius:999px; padding:8px 10px; }
+
+    /* Scanner */
+    .scannerWrap{
+      display:grid;
+      grid-template-columns: 1fr .9fr;
+      gap:12px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .scannerWrap{ grid-template-columns:1fr; } }
+    video{
+      width:100%;
+      border-radius:16px;
+      border:1px solid rgba(36,48,74,.7);
+      background:#000;
+    }
+    .scanBox{
+      border:1px solid rgba(36,48,74,.7);
+      border-radius:16px;
+      padding:12px;
+      background: rgba(0,0,0,.18);
+    }
+    .list{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+    .list button{ justify-content:space-between; width:100%; }
+
+    /* Login */
+    .loginGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 800px){ .loginGrid{ grid-template-columns:1fr; } }
+    .msg{
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(36,48,74,.7);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .msg b{ color: var(--text); }
   </style>
 </head>
 
 <body>
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <h1>📱 Control de Stock iPhone — Cloud (Sin Login)</h1>
-      <div class="pill">
-        <span id="cloudDot" class="dot warn"></span>
-        <span id="cloudText">Conectando…</span>
-        <span>•</span>
-        TC global (ARS/USD): <strong id="tcPill">—</strong>
-        <span>•</span>
-        <span>Vendido congela TC</span>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>📱 Control de Stock iPhone — Cloud</h1>
+        <div class="pill">
+          <span id="cloudDot" class="dot warn"></span>
+          <span id="cloudText">Desconectado</span>
+          <span class="muted">•</span>
+          TC global (ARS/USD): <strong id="tcPill">—</strong>
+          <span class="muted">•</span>
+          <span class="muted">Vendido congela TC</span>
+        </div>
       </div>
-    </div>
 
-    <div class="topbar">
-      <button id="btnExportJson">Export JSON</button>
-      <button id="btnImportJson">Import JSON</button>
-      <button id="btnExportCsv">Export CSV</button>
-      <button id="btnClear" class="danger">Borrar todo</button>
-    </div>
-  </header>
-
-  <div class="grid">
-    <section class="card">
-      <div class="hd">
-        <h2>Alta / Edición</h2>
-        <div class="chips" id="calcChips"></div>
+      <div class="topbar">
+        <button id="btnLogin" class="primary">🔐 Iniciar sesión</button>
+        <button id="btnLogout" class="danger" disabled>Salir</button>
+        <button id="btnDemo" disabled>Cargar demo</button>
+        <button id="btnExportJson" disabled>Export JSON</button>
+        <button id="btnImportJson" disabled>Import JSON</button>
+        <button id="btnExportCsv" disabled>Export CSV</button>
+        <button id="btnClear" class="danger" disabled>Borrar todo</button>
       </div>
-      <div class="bd">
-        <div class="stats" id="stats"></div>
+    </header>
 
-        <div style="height:12px"></div>
-
-        <div class="debug">
-          <div><b>Sync:</b> <span id="syncNote">—</span></div>
-          <div><b>Último guardado:</b> <span id="lastSaved">—</span></div>
-          <div><b>Último error:</b> <span id="lastError">—</span></div>
-          <div class="hint" style="margin:8px 0 0">
-            Si “Último error” dice <b>permission-denied</b>, tus Rules no permiten write o no las publicaste.
-          </div>
+    <div class="grid">
+      <!-- Left -->
+      <section class="card">
+        <div class="hd">
+          <h2>Alta / Edición de equipo</h2>
+          <div class="chips" id="calcChips"></div>
         </div>
 
-        <div style="height:12px"></div>
+        <div class="bd">
+          <div class="stats" id="stats"></div>
 
-        <form id="form">
-          <div class="row">
-            <div class="field span-3">
-              <label>Modelo</label>
-              <select id="model" required>
-                <option value="">Seleccionar…</option>
-                <option>iPhone 11</option><option>iPhone 11 Pro</option><option>iPhone 11 Pro Max</option>
-                <option>iPhone 12</option><option>iPhone 12 mini</option><option>iPhone 12 Pro</option><option>iPhone 12 Pro Max</option>
-                <option>iPhone 13</option><option>iPhone 13 mini</option><option>iPhone 13 Pro</option><option>iPhone 13 Pro Max</option>
-                <option>iPhone 14</option><option>iPhone 14 Plus</option><option>iPhone 14 Pro</option><option>iPhone 14 Pro Max</option>
-                <option>iPhone 15</option><option>iPhone 15 Plus</option><option>iPhone 15 Pro</option><option>iPhone 15 Pro Max</option>
-                <option>iPhone 16</option><option>iPhone 16 Plus</option><option>iPhone 16 Pro</option><option>iPhone 16 Pro Max</option>
-              </select>
-            </div>
-            <div class="field span-2">
-              <label>GB</label>
-              <select id="storage" required>
-                <option value="">—</option>
-                <option>64</option><option>128</option><option>256</option><option>512</option><option>1024</option>
-              </select>
-            </div>
-            <div class="field span-3">
-              <label>Color</label>
-              <input id="color" required placeholder="Ej: Blue / Black" />
-            </div>
-            <div class="field span-2">
-              <label>Batería %</label>
-              <input id="battery" type="number" min="0" max="100" step="1" placeholder="85" />
-            </div>
-            <div class="field span-2">
-              <label>Condición</label>
-              <select id="condition">
-                <option>Excelente</option><option>Muy buena</option><option>Buena</option><option>Detalle estético</option>
-              </select>
-            </div>
-          </div>
+          <div style="height:12px"></div>
 
-          <div class="row">
-            <div class="field span-6">
-              <label>IMEI / Serie</label>
-              <div class="inputWithBtn">
-                <input id="imei" placeholder="Escaneá o pegá IMEI/serie" />
-                <button type="button" id="btnScanImei">📷 Escanear</button>
+          <form id="form">
+            <div class="row">
+              <div class="field span-3">
+                <label>Modelo</label>
+                <select id="model" required>
+                  <option value="">Seleccionar…</option>
+                  <option>iPhone 11</option><option>iPhone 11 Pro</option><option>iPhone 11 Pro Max</option>
+                  <option>iPhone 12</option><option>iPhone 12 mini</option><option>iPhone 12 Pro</option><option>iPhone 12 Pro Max</option>
+                  <option>iPhone 13</option><option>iPhone 13 mini</option><option>iPhone 13 Pro</option><option>iPhone 13 Pro Max</option>
+                  <option>iPhone 14</option><option>iPhone 14 Plus</option><option>iPhone 14 Pro</option><option>iPhone 14 Pro Max</option>
+                  <option>iPhone 15</option><option>iPhone 15 Plus</option><option>iPhone 15 Pro</option><option>iPhone 15 Pro Max</option>
+                  <option>iPhone 16</option><option>iPhone 16 Plus</option><option>iPhone 16 Pro</option><option>iPhone 16 Pro Max</option>
+                </select>
               </div>
-              <div class="hint">Escaneo funciona mejor en Chrome.</div>
-            </div>
-            <div class="field span-3">
-              <label>Proveedor</label>
-              <input id="supplier" placeholder="Mayorista / Canje…" />
-            </div>
-            <div class="field span-3">
-              <label>Fecha ingreso</label>
-              <input id="dateIn" type="date" />
-            </div>
-          </div>
 
-          <div class="row">
-            <div class="field span-3">
-              <label>Estado</label>
-              <select id="status">
+              <div class="field span-2">
+                <label>GB</label>
+                <select id="storage" required>
+                  <option value="">—</option>
+                  <option>64</option><option>128</option><option>256</option><option>512</option><option>1024</option>
+                </select>
+              </div>
+
+              <div class="field span-3">
+                <label>Color</label>
+                <input id="color" placeholder="Ej: Blue / Black / Sierra Blue" required />
+              </div>
+
+              <div class="field span-2">
+                <label>Batería %</label>
+                <input id="battery" type="number" min="0" max="100" step="1" placeholder="85" />
+              </div>
+
+              <div class="field span-2">
+                <label>Condición</label>
+                <select id="condition">
+                  <option>Excelente</option>
+                  <option>Muy buena</option>
+                  <option>Buena</option>
+                  <option>Detalle estético</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field span-6">
+                <label>IMEI / Serie</label>
+                <div class="inputWithBtn">
+                  <input id="imei" placeholder="Escaneá o pegá el IMEI/serie" />
+                  <button type="button" id="btnScanImei">📷 Escanear</button>
+                </div>
+                <div class="hint">Escaneo: Chrome recomendado. Si no está disponible, te avisa.</div>
+              </div>
+
+              <div class="field span-3">
+                <label>Proveedor / Origen</label>
+                <input id="supplier" placeholder="Ej: Mayorista / Particular / Canje" />
+              </div>
+
+              <div class="field span-3">
+                <label>Fecha ingreso</label>
+                <input id="dateIn" type="date" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field span-3">
+                <label>Estado</label>
+                <select id="status">
+                  <option value="Disponible">Disponible</option>
+                  <option value="Reservado">Reservado</option>
+                  <option value="Vendido">Vendido</option>
+                </select>
+                <div class="hint">Al pasar a <b>Vendido</b>, se congela el TC automáticamente.</div>
+              </div>
+
+              <div class="field span-3">
+                <label>Tipo de cambio global (ARS/USD)</label>
+                <input id="rate" type="number" min="0" step="0.01" placeholder="Ej: 1200" required />
+                <div class="hint">Cambialo cuando quieras: recalcula todo (menos lo vendido).</div>
+              </div>
+
+              <div class="field span-2">
+                <label>Costo USD</label>
+                <input id="costUsd" type="number" min="0" step="0.01" placeholder="Ej: 350" required />
+              </div>
+
+              <div class="field span-2">
+                <label>Precio final USD</label>
+                <input id="priceUsd" type="number" min="0" step="0.01" placeholder="Ej: 420" required />
+              </div>
+
+              <div class="field span-2">
+                <label>Fees / Gastos ARS</label>
+                <input id="feesArs" type="number" min="0" step="1" placeholder="Ej: 5000" value="0" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field span-12">
+                <label>Notas</label>
+                <input id="notes" placeholder="Ej: con caja, garantía 30 días, etc." />
+              </div>
+            </div>
+
+            <div class="split">
+              <div class="hint" id="saveHint"></div>
+              <div class="row-actions">
+                <button type="button" id="btnReset">Limpiar</button>
+                <button type="submit" class="primary" id="btnSave">Guardar</button>
+              </div>
+            </div>
+
+            <input type="hidden" id="editingId" value="" />
+          </form>
+        </div>
+      </section>
+
+      <!-- Right -->
+      <section class="card">
+        <div class="hd">
+          <h2>Stock</h2>
+          <div class="toolbar">
+            <div class="field span-4" style="min-width:240px">
+              <label>Búsqueda</label>
+              <input id="q" placeholder="Modelo, GB, color, IMEI…" />
+            </div>
+            <div class="field span-3" style="min-width:170px">
+              <label>Filtrar estado</label>
+              <select id="filterStatus">
+                <option value="">Todos</option>
                 <option value="Disponible">Disponible</option>
                 <option value="Reservado">Reservado</option>
                 <option value="Vendido">Vendido</option>
               </select>
-              <div class="hint">Al vender se congela el TC.</div>
             </div>
-            <div class="field span-3">
-              <label>Tipo de cambio (ARS/USD)</label>
-              <input id="rate" type="number" min="0" step="0.01" required placeholder="Ej: 1200" />
-            </div>
-            <div class="field span-2">
-              <label>Costo USD</label>
-              <input id="costUsd" type="number" min="0" step="0.01" required placeholder="Ej: 350" />
-            </div>
-            <div class="field span-2">
-              <label>Precio USD</label>
-              <input id="priceUsd" type="number" min="0" step="0.01" required placeholder="Ej: 420" />
-            </div>
-            <div class="field span-2">
-              <label>Fees ARS</label>
-              <input id="feesArs" type="number" min="0" step="1" value="0" />
+            <div class="field span-3" style="min-width:170px">
+              <label>Orden</label>
+              <select id="sortBy">
+                <option value="dateIn_desc">Ingreso (nuevo→viejo)</option>
+                <option value="dateIn_asc">Ingreso (viejo→nuevo)</option>
+                <option value="profit_desc">Ganancia ARS (↓)</option>
+                <option value="profit_asc">Ganancia ARS (↑)</option>
+                <option value="model_asc">Modelo (A→Z)</option>
+                <option value="price_desc">Precio USD (↓)</option>
+              </select>
             </div>
           </div>
+        </div>
 
-          <div class="row">
-            <div class="field span-12">
-              <label>Notas</label>
-              <input id="notes" placeholder="Caja, garantía, detalles…" />
-            </div>
+        <div class="bd">
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Equipo</th>
+                  <th>IMEI/Serie</th>
+                  <th>Estado</th>
+                  <th>Costo</th>
+                  <th>Precio</th>
+                  <th>Ganancia</th>
+                  <th>Ingreso</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
           </div>
 
+          <div style="height:10px"></div>
           <div class="split">
-            <div class="hint" id="saveHint"></div>
-            <div class="row-actions">
-              <button type="button" id="btnReset">Limpiar</button>
-              <button type="submit" class="primary">Guardar</button>
+            <div class="hint" id="countNote">—</div>
+            <div class="hint" id="syncNote">Iniciá sesión para sincronizar.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- LOGIN modal -->
+  <div class="modal" id="modalLogin">
+    <div class="panel">
+      <div class="ph">
+        <h3>Iniciar sesión</h3>
+        <button class="closex" id="btnCloseLogin">Cerrar</button>
+      </div>
+      <div class="pb">
+        <div class="loginGrid">
+          <div>
+            <div class="row">
+              <div class="field span-12">
+                <label>Email</label>
+                <input id="loginEmail" type="email" placeholder="tuemail@gmail.com" />
+              </div>
+              <div class="field span-12">
+                <label>Contraseña</label>
+                <input id="loginPass" type="password" placeholder="••••••••" />
+              </div>
             </div>
+            <div class="row-actions">
+              <button class="primary" id="btnDoLogin">Entrar</button>
+              <button id="btnDoRegister">Crear cuenta</button>
+            </div>
+            <div class="hint" id="loginMsg"></div>
           </div>
 
-          <input type="hidden" id="editingId" value="" />
-        </form>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="hd">
-        <h2>Stock</h2>
-        <div class="toolbar">
-          <div class="field span-4" style="min-width:240px">
-            <label>Búsqueda</label>
-            <input id="q" placeholder="Modelo, GB, color, IMEI…" />
-          </div>
-          <div class="field span-3" style="min-width:170px">
-            <label>Estado</label>
-            <select id="filterStatus">
-              <option value="">Todos</option>
-              <option value="Disponible">Disponible</option>
-              <option value="Reservado">Reservado</option>
-              <option value="Vendido">Vendido</option>
-            </select>
-          </div>
-          <div class="field span-3" style="min-width:170px">
-            <label>Orden</label>
-            <select id="sortBy">
-              <option value="dateIn_desc">Ingreso (nuevo→viejo)</option>
-              <option value="dateIn_asc">Ingreso (viejo→nuevo)</option>
-              <option value="profit_desc">Ganancia ARS (↓)</option>
-              <option value="profit_asc">Ganancia ARS (↑)</option>
-              <option value="model_asc">Modelo (A→Z)</option>
-              <option value="price_desc">Precio USD (↓)</option>
-            </select>
+          <div class="msg">
+            <b>Requisitos Firebase:</b><br><br>
+            1) Authentication → Email/Password habilitado<br>
+            2) Firestore creado<br>
+            3) Reglas recomendadas:<br><br>
+            <span class="kbd">match /users/{uid}/{document=**} allow read, write: if request.auth.uid==uid;</span>
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="bd">
-        <div class="tablewrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Equipo</th><th>IMEI</th><th>Estado</th><th>Costo</th><th>Precio</th><th>Ganancia</th><th>Ingreso</th><th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
+  <!-- Import JSON modal -->
+  <div class="modal" id="modalImport">
+    <div class="panel">
+      <div class="ph">
+        <h3>Importar JSON</h3>
+        <button class="closex" id="btnCloseImport">Cerrar</button>
+      </div>
+      <div class="pb">
+        <p class="hint" style="margin-top:0">
+          Pegá el JSON exportado y tocá <b>Importar</b>. Reemplaza el stock en la nube (para tu usuario).
+        </p>
+        <textarea id="importArea" placeholder='{"settings":{"rate":1200},"items":[...]}'></textarea>
         <div style="height:10px"></div>
         <div class="split">
-          <div class="hint" id="countNote">—</div>
-        </div>
-      </div>
-    </section>
-  </div>
-</div>
-
-<!-- Import JSON -->
-<div class="modal" id="modalImport">
-  <div class="panel">
-    <div class="ph">
-      <h3>Importar JSON</h3>
-      <button class="closex" id="btnCloseImport">Cerrar</button>
-    </div>
-    <div class="pb">
-      <textarea id="importArea" placeholder='{"settings":{"rate":1200},"items":[...]}'></textarea>
-      <div style="height:10px"></div>
-      <div class="row-actions">
-        <button class="danger" id="btnDoImport">Importar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Scanner -->
-<div class="modal" id="modalScan">
-  <div class="panel">
-    <div class="ph">
-      <h3>Escanear</h3>
-      <div class="row-actions">
-        <button id="btnStopScan">Detener</button>
-        <button class="closex" id="btnCloseScan">Cerrar</button>
-      </div>
-    </div>
-    <div class="pb">
-      <div class="scannerWrap">
-        <div>
-          <video id="video" playsinline></video>
-          <div class="hint">Cuando detecte, tocá el valor para cargarlo en IMEI.</div>
-        </div>
-        <div class="scanBox">
-          <div class="hint">Detectados:</div>
-          <div class="list" id="foundList"></div>
-          <div style="height:10px"></div>
-          <div class="hint" id="scanStatus">—</div>
+          <div class="hint">Reemplaza todo.</div>
+          <div class="row-actions">
+            <button class="danger" id="btnDoImport">Importar</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script type="module">
-  const firebaseConfig = {
-    apiKey: "AIzaSyBRQTpxrP3-0DiRD5N3knn9wGgwYX68H4w",
-    authDomain: "iphonenicolas-9ce07.firebaseapp.com",
-    projectId: "iphonenicolas-9ce07",
-    storageBucket: "iphonenicolas-9ce07.firebasestorage.app",
-    messagingSenderId: "777132865856",
-    appId: "1:777132865856:web:d70ccd9b4684d3dbe6e2a5",
-    measurementId: "G-XM7G2XVV9K"
-  };
+  <!-- Scanner modal -->
+  <div class="modal" id="modalScan">
+    <div class="panel">
+      <div class="ph">
+        <h3>Escanear código / IMEI</h3>
+        <div class="row-actions">
+          <button id="btnStopScan">Detener</button>
+          <button class="closex" id="btnCloseScan">Cerrar</button>
+        </div>
+      </div>
+      <div class="pb">
+        <div class="scannerWrap">
+          <div>
+            <video id="video" playsinline></video>
+            <div class="hint">Apuntá al código. Cuando detecte, aparece a la derecha (tocá para usar).</div>
+          </div>
+          <div class="scanBox">
+            <div class="hint">Detectados:</div>
+            <div class="list" id="foundList"></div>
+            <div style="height:10px"></div>
+            <div class="hint" id="scanStatus">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  const STOCK_DOC = doc(db, "public", "stockMain");
-  const state = { settings: { rate: 0 }, items: [] };
-
-  const $ = (id) => document.getElementById(id);
-
-  const cloudDot = $("cloudDot"), cloudText = $("cloudText");
-  const syncNote = $("syncNote"), lastSaved = $("lastSaved"), lastError = $("lastError");
-  const tcPill = $("tcPill");
-
-  const btnExportJson = $("btnExportJson"), btnImportJson = $("btnImportJson"), btnExportCsv = $("btnExportCsv"), btnClear = $("btnClear");
-  const modalImport = $("modalImport"), btnCloseImport = $("btnCloseImport"), btnDoImport = $("btnDoImport"), importArea = $("importArea");
-
-  const form = $("form");
-  const model = $("model"), storage = $("storage"), color = $("color"), battery = $("battery"), condition = $("condition");
-  const imei = $("imei"), supplier = $("supplier"), status = $("status"), dateIn = $("dateIn");
-  const rate = $("rate"), costUsd = $("costUsd"), priceUsd = $("priceUsd"), feesArs = $("feesArs"), notes = $("notes");
-  const editingId = $("editingId");
-  const tbody = $("tbody"), stats = $("stats"), calcChips = $("calcChips");
-  const q = $("q"), filterStatus = $("filterStatus"), sortBy = $("sortBy"), countNote = $("countNote");
-  const saveHint = $("saveHint"), btnReset = $("btnReset");
-
-  const btnScanImei = $("btnScanImei"), modalScan = $("modalScan"), btnCloseScan = $("btnCloseScan"), btnStopScan = $("btnStopScan");
-  const video = $("video"), foundList = $("foundList"), scanStatus = $("scanStatus");
-
-  function setCloudStatus(kind, text){
-    cloudText.textContent = text;
-    cloudDot.classList.remove("ok","warn","bad");
-    cloudDot.classList.add(kind);
-  }
-  function setErr(e){
-    const msg = e?.code ? `${e.code}` : (e?.message || String(e));
-    lastError.textContent = msg;
-  }
-  function clearErr(){ lastError.textContent = "—"; }
-
-  function nowTime(){
-    const d = new Date();
-    return d.toLocaleString("es-AR");
-  }
-
-  if (!dateIn.value) dateIn.value = toISODate(new Date());
-  if (!feesArs.value) feesArs.value = "0";
-
-  // INIT
-  setCloudStatus("warn","Conectando…");
-  syncNote.textContent = "Conectando a Firestore…";
-  lastSaved.textContent = "—";
-  lastError.textContent = "—";
-
-  async function ensureDoc(){
-    try{
-      const snap = await getDoc(STOCK_DOC);
-      if (!snap.exists()) {
-        await setDoc(STOCK_DOC, { settings:{rate:0}, items:[], createdAt: Date.now() }, { merge:true });
-      }
-    } catch(e){
-      setCloudStatus("bad","Error nube");
-      syncNote.textContent = "❌ No conecta";
-      setErr(e);
-      console.error(e);
-    }
-  }
-  await ensureDoc();
-
-  onSnapshot(STOCK_DOC, (snap) => {
-    const d = snap.data() || {};
-    state.settings = d.settings || { rate: 0 };
-    state.items = Array.isArray(d.items) ? d.items : [];
-    rate.value = state.settings.rate || "";
-    setCloudStatus("ok","Conectado");
-    syncNote.textContent = "✅ Sincronizado";
-    clearErr();
-    render();
-  }, (e) => {
-    setCloudStatus("bad","Error nube");
-    syncNote.textContent = "❌ Error sincronización";
-    setErr(e);
-    console.error(e);
-  });
-
-  async function saveCloudNow(){
-    try{
-      setCloudStatus("warn","Guardando…");
-      syncNote.textContent = "Guardando…";
-      clearErr();
-      await setDoc(STOCK_DOC, { settings: state.settings, items: state.items, updatedAt: Date.now() }, { merge:true });
-      setCloudStatus("ok","Conectado");
-      syncNote.textContent = "✅ Guardado";
-      lastSaved.textContent = nowTime();
-    } catch(e){
-      setCloudStatus("bad","No guarda");
-      syncNote.textContent = "❌ No guarda";
-      setErr(e);
-      console.error(e);
-    }
-  }
-
-  // TC freeze
-  function effectiveRateFor(it){
-    const globalR = num(rate.value) || num(state.settings.rate) || 0;
-    if (it.status === "Vendido" && num(it.soldRate) > 0) return num(it.soldRate);
-    return globalR;
-  }
-  function calcWithRate(it){
-    const r = effectiveRateFor(it);
-    const cArs = (it.costUsd || 0) * r;
-    const pArs = (it.priceUsd || 0) * r;
-    const gArs = pArs - cArs - (it.feesArs || 0);
-    const gUsd = r ? gArs / r : 0;
-    return { r, cArs, pArs, gArs, gUsd };
-  }
-  function recalcChips(){
-    const r = num(rate.value);
-    tcPill.textContent = r ? fmtARS(r) : "—";
-    const cUSD = num(costUsd.value), pUSD = num(priceUsd.value), fees = num(feesArs.value);
-    const cARS = cUSD * r, pARS = pUSD * r, gARS = pARS - cARS - fees, gUSD = r ? (gARS / r) : 0;
-    calcChips.innerHTML = `
-      <span class="chip">Costo ARS: <b class="money">${fmtARS(cARS)}</b></span>
-      <span class="chip">Precio ARS: <b class="money">${fmtARS(pARS)}</b></span>
-      <span class="chip">Ganancia ARS: <b class="money">${fmtARS(gARS)}</b></span>
-      <span class="chip">Ganancia USD: <b class="money">${fmtUSD(gUSD)}</b></span>
-    `;
-  }
-
-  rate.addEventListener("input", async () => {
-    state.settings.rate = num(rate.value);
-    recalcChips(); render();
-    await saveCloudNow();
-  });
-  [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener("input", recalcChips));
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    saveHint.textContent = "";
-
-    const item = buildItemFromForm();
-    if (!item) return;
-
-    if (editingId.value) {
-      const idx = state.items.findIndex(x => x.id === editingId.value);
-      if (idx >= 0) state.items[idx] = item;
-      saveHint.textContent = "✅ Actualizado.";
-    } else {
-      state.items.unshift(item);
-      saveHint.textContent = "✅ Agregado.";
-    }
-
-    await saveCloudNow();
-    resetForm(false);
-    render();
-  });
-
-  btnReset.addEventListener("click", () => resetForm(true));
-
-  function resetForm(clearRate){
-    editingId.value = "";
-    form.reset();
-    dateIn.value = toISODate(new Date());
-    feesArs.value = "0";
-    status.value = "Disponible";
-    condition.value = "Excelente";
-    if (!clearRate) rate.value = state.settings.rate || "";
-    recalcChips();
-  }
-
-  function buildItemFromForm(){
-    const globalR = num(rate.value);
-    if (!model.value || !storage.value || !color.value || !globalR) {
-      alert("Completá: Modelo, GB, Color y Tipo de cambio.");
-      return null;
-    }
-    const cUSD = num(costUsd.value), pUSD = num(priceUsd.value);
-    if (cUSD <= 0 || pUSD <= 0) { alert("Costo y Precio USD > 0."); return null; }
-
-    const prev = editingId.value ? state.items.find(x => x.id === editingId.value) : null;
-    const newStatus = status.value;
-    const prevStatus = prev?.status || null;
-
-    let soldRate = prev?.soldRate ?? null;
-    let soldAt = prev?.soldAt ?? null;
-
-    const becomingSold = (newStatus === "Vendido") && (prevStatus !== "Vendido");
-    const isNewSold = (!prev && newStatus === "Vendido");
-    if (becomingSold || isNewSold) { soldRate = globalR; soldAt = Date.now(); }
-
-    return {
-      id: editingId.value || cryptoId(),
-      model: model.value,
-      storageGB: Number(storage.value),
-      color: color.value.trim(),
-      battery: battery.value ? clampInt(Number(battery.value), 0, 100) : null,
-      condition: condition.value,
-      imei: imei.value.trim(),
-      supplier: supplier.value.trim(),
-      status: newStatus,
-      dateIn: dateIn.value || toISODate(new Date()),
-      costUsd: cUSD,
-      priceUsd: pUSD,
-      feesArs: num(feesArs.value),
-      notes: notes.value.trim(),
-      soldRate, soldAt,
-      updatedAt: Date.now()
+  <!-- Firebase + App -->
+  <script type="module">
+    /**********************************************************************
+     * ✅ Firebase Config (TU CONFIG YA PEGADA)
+     **********************************************************************/
+    const firebaseConfig = {
+      apiKey: "AIzaSyBRQTpxrP3-0DiRD5N3knn9wGgwYX68H4w",
+      authDomain: "iphonenicolas-9ce07.firebaseapp.com",
+      projectId: "iphonenicolas-9ce07",
+      storageBucket: "iphonenicolas-9ce07.firebasestorage.app",
+      messagingSenderId: "777132865856",
+      appId: "1:777132865856:web:d70ccd9b4684d3dbe6e2a5",
+      measurementId: "G-XM7G2XVV9K"
     };
-  }
 
-  function editItem(id){
-    const it = state.items.find(x => x.id === id);
-    if (!it) return;
-    editingId.value = it.id;
-    model.value = it.model;
-    storage.value = String(it.storageGB);
-    color.value = it.color;
-    battery.value = it.battery ?? "";
-    condition.value = it.condition;
-    imei.value = it.imei || "";
-    supplier.value = it.supplier || "";
-    status.value = it.status;
-    dateIn.value = it.dateIn || toISODate(new Date());
-    costUsd.value = it.costUsd;
-    priceUsd.value = it.priceUsd;
-    feesArs.value = it.feesArs || 0;
-    notes.value = it.notes || "";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    recalcChips();
-  }
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
-  async function delItem(id){
-    const it = state.items.find(x => x.id === id);
-    if (!it) return;
-    if (!confirm(`¿Borrar "${it.model} ${it.storageGB}GB ${it.color}"?`)) return;
-    state.items = state.items.filter(x => x.id !== id);
-    await saveCloudNow();
-    render();
-  }
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-  async function toggleStatus(id){
-    const it = state.items.find(x => x.id === id);
-    if (!it) return;
-    const order = ["Disponible","Reservado","Vendido"];
-    const idx = order.indexOf(it.status);
-    const next = order[(idx + 1) % order.length];
-    if (next === "Vendido" && it.status !== "Vendido") {
-      it.soldRate = num(rate.value) || num(state.settings.rate) || 0;
-      it.soldAt = Date.now();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    /**********************************************************************
+     * ✅ State (en un doc por usuario)
+     **********************************************************************/
+    const state = { settings: { rate: 0 }, items: [] };
+    let uid = null;
+    let unsub = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    const cloudDot = $("cloudDot");
+    const cloudText = $("cloudText");
+    const syncNote = $("syncNote");
+
+    const btnLogin = $("btnLogin");
+    const btnLogout = $("btnLogout");
+
+    const btnDemo = $("btnDemo");
+    const btnExportJson = $("btnExportJson");
+    const btnImportJson = $("btnImportJson");
+    const btnExportCsv = $("btnExportCsv");
+    const btnClear = $("btnClear");
+
+    const modalLogin = $("modalLogin");
+    const btnCloseLogin = $("btnCloseLogin");
+    const loginEmail = $("loginEmail");
+    const loginPass = $("loginPass");
+    const btnDoLogin = $("btnDoLogin");
+    const btnDoRegister = $("btnDoRegister");
+    const loginMsg = $("loginMsg");
+
+    const form = $("form");
+    const model = $("model");
+    const storage = $("storage");
+    const color = $("color");
+    const battery = $("battery");
+    const condition = $("condition");
+    const imei = $("imei");
+    const supplier = $("supplier");
+    const status = $("status");
+    const dateIn = $("dateIn");
+    const rate = $("rate");
+    const costUsd = $("costUsd");
+    const priceUsd = $("priceUsd");
+    const feesArs = $("feesArs");
+    const notes = $("notes");
+    const editingId = $("editingId");
+
+    const tbody = $("tbody");
+    const stats = $("stats");
+    const calcChips = $("calcChips");
+    const tcPill = $("tcPill");
+    const q = $("q");
+    const filterStatus = $("filterStatus");
+    const sortBy = $("sortBy");
+    const countNote = $("countNote");
+    const saveHint = $("saveHint");
+    const btnReset = $("btnReset");
+
+    const modalImport = $("modalImport");
+    const btnCloseImport = $("btnCloseImport");
+    const btnDoImport = $("btnDoImport");
+    const importArea = $("importArea");
+
+    const btnScanImei = $("btnScanImei");
+    const modalScan = $("modalScan");
+    const btnCloseScan = $("btnCloseScan");
+    const btnStopScan = $("btnStopScan");
+    const video = $("video");
+    const foundList = $("foundList");
+    const scanStatus = $("scanStatus");
+
+    setEnabled(false);
+    if (!dateIn.value) dateIn.value = toISODate(new Date());
+    feesArs.value = "0";
+
+    const userDoc = (uid) => doc(db, "users", uid, "app", "stock");
+
+    function setCloudStatus(kind, text){
+      cloudText.textContent = text;
+      cloudDot.classList.remove("ok","warn","bad");
+      cloudDot.classList.add(kind);
     }
-    it.status = next;
-    it.updatedAt = Date.now();
-    await saveCloudNow();
-    render();
-  }
 
-  function badgeFor(st){
-    if (st === "Disponible") return `<span class="badge b-ok">Disponible</span>`;
-    if (st === "Reservado") return `<span class="badge b-warn">Reservado</span>`;
-    return `<span class="badge b-bad">Vendido</span>`;
-  }
+    let saveTimer = null;
+    async function saveCloudDebounced() {
+      if (!uid) return;
+      syncNote.textContent = "Guardando…";
+      setCloudStatus("warn", "Conectado • Guardando…");
 
-  function applyQuerySort(items){
-    const qq = (q.value || "").trim().toLowerCase();
-    const st = filterStatus.value;
-    let out = items.filter(it => {
-      if (st && it.status !== st) return false;
-      if (!qq) return true;
-      const blob = [it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes].join(" ").toLowerCase();
-      return blob.includes(qq);
-    });
-    const [key, dir] = sortBy.value.split("_");
-    const asc = dir === "asc";
-    out.sort((a,b) => {
-      let av, bv;
-      if (key === "dateIn") { av = a.dateIn || ""; bv = b.dateIn || ""; }
-      else if (key === "profit") { av = calcWithRate(a).gArs; bv = calcWithRate(b).gArs; }
-      else if (key === "price") { av = a.priceUsd; bv = b.priceUsd; }
-      else if (key === "model") { av = (a.model+" "+a.storageGB).toLowerCase(); bv = (b.model+" "+b.storageGB).toLowerCase(); }
-      else { av = a.updatedAt; bv = b.updatedAt; }
-      if (av < bv) return asc ? -1 : 1;
-      if (av > bv) return asc ? 1 : -1;
-      return 0;
-    });
-    countNote.textContent = `${out.length} resultado(s) • Total: ${state.items.length}`;
-    return out;
-  }
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => {
+        try {
+          await setDoc(userDoc(uid), {
+            settings: state.settings,
+            items: state.items,
+            updatedAt: Date.now()
+          }, { merge: true });
 
-  function renderStats(){
-    const items = state.items;
-    const avail = items.filter(x => x.status === "Disponible");
-    const reserved = items.filter(x => x.status === "Reservado");
-    const sold = items.filter(x => x.status === "Vendido");
-    const sumCalc = (arr, selector) => arr.reduce((acc, it) => acc + selector(calcWithRate(it), it), 0);
-    const investedARS = sumCalc([...avail, ...reserved], (c) => c.cArs);
-    const potentialProfitARS = sumCalc([...avail, ...reserved], (c) => c.gArs);
-    const soldProfitARS = sumCalc(sold, (c) => c.gArs);
-    stats.innerHTML = `
-      ${stat("Disponibles", avail.length, "En stock")}
-      ${stat("Reservados", reserved.length, "Pendientes")}
-      ${stat("Vendidos", sold.length, "TC congelado")}
-      ${stat("Invertido (ARS)", fmtARS(investedARS), "Disp + reserv")}
-      ${stat("Ganancia potencial (ARS)", fmtARS(potentialProfitARS), "No incluye vendidos")}
-      ${stat("Ganancia vendida (ARS)", fmtARS(soldProfitARS), "Histórico")}
-      ${stat("Registros", items.length, "Total")}
-      ${stat("TC global", rate.value ? fmtARS(num(rate.value)) : "—", "Actual")}
-    `;
-  }
+          syncNote.textContent = "✅ Guardado";
+          setCloudStatus("ok", "Conectado • Guardado");
+        } catch (e) {
+          console.error(e);
+          syncNote.textContent = "❌ Error guardando";
+          setCloudStatus("bad", "Error de nube");
+          alert("Error guardando en la nube: " + (e.message || String(e)));
+        }
+      }, 450);
+    }
 
-  function stat(k, v, s){
-    return `
-      <div class="stat">
-        <div class="k">${escapeHtml(k)}</div>
-        <div class="v">${typeof v === "number" ? v : escapeHtml(String(v))}</div>
-        <div class="s">${escapeHtml(s)}</div>
-      </div>
-    `;
-  }
+    btnLogin.addEventListener("click", () => openModal(modalLogin));
+    btnCloseLogin.addEventListener("click", () => closeModal(modalLogin));
+    modalLogin.addEventListener("click", (e) => { if (e.target === modalLogin) closeModal(modalLogin); });
 
-  function renderTable(items){
-    tbody.innerHTML = items.map(it => {
-      const { r, cArs, pArs, gArs, gUsd } = calcWithRate(it);
-      const name = `${escapeHtml(it.model)} • ${it.storageGB}GB • ${escapeHtml(it.color)}` + (it.battery !== null ? ` • 🔋${it.battery}%` : "");
-      const imeiTxt = it.imei ? escapeHtml(it.imei) : `<span class="mini">—</span>`;
-      const profitClass = gArs >= 0 ? "b-ok" : "b-bad";
-      const rateNote = it.status === "Vendido"
-        ? `<span class="mini">TC congelado: ${fmtARS(num(it.soldRate)||r)}</span>`
-        : `<span class="mini">TC global: ${fmtARS(r)}</span>`;
-      return `
-        <tr>
-          <td>
-            <div style="font-weight:900">${name}</div>
-            <div class="mini">${escapeHtml(it.condition)}${it.supplier ? " • " + escapeHtml(it.supplier) : ""}${it.notes ? " • " + escapeHtml(it.notes) : ""}</div>
-            <div>${rateNote}</div>
-          </td>
-          <td class="mini">${imeiTxt}</td>
-          <td>${badgeFor(it.status)}</td>
-          <td><div class="money"><b>${fmtUSD(it.costUsd)}</b></div><div class="mini money">${fmtARS(cArs)}</div></td>
-          <td><div class="money"><b>${fmtUSD(it.priceUsd)}</b></div><div class="mini money">${fmtARS(pArs)}</div></td>
-          <td><span class="badge ${profitClass}">${fmtARS(gArs)}</span><div class="mini money">${fmtUSD(gUsd)}</div></td>
-          <td class="mini">${escapeHtml(it.dateIn || "—")}</td>
-          <td>
-            <div class="row-actions">
-              <button data-edit="${it.id}">Editar</button>
-              <button data-toggle="${it.id}">Estado</button>
-              <button class="danger" data-del="${it.id}">Borrar</button>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join("");
-
-    tbody.querySelectorAll("[data-edit]").forEach(btn => btn.addEventListener("click", () => editItem(btn.dataset.edit)));
-    tbody.querySelectorAll("[data-del]").forEach(btn => btn.addEventListener("click", () => delItem(btn.dataset.del)));
-    tbody.querySelectorAll("[data-toggle]").forEach(btn => btn.addEventListener("click", () => toggleStatus(btn.dataset.toggle)));
-  }
-
-  function render(){
-    renderStats();
-    renderTable(applyQuerySort([...state.items]));
-    recalcChips();
-  }
-
-  [q, filterStatus, sortBy].forEach(el => { el.addEventListener("input", render); el.addEventListener("change", render); });
-
-  // Export / Import / Clear
-  btnExportJson.addEventListener("click", () => {
-    const payload = JSON.stringify({ settings: state.settings, items: state.items }, null, 2);
-    downloadText(payload, `stock-backup-${toISODate(new Date())}.json`, "application/json");
-  });
-
-  btnExportCsv.addEventListener("click", () => {
-    const headers = ["id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn","costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"];
-    const rows = state.items.map(it => headers.map(h => csvCell(it[h])));
-    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-    downloadText(csv, `stock-${toISODate(new Date())}.csv`, "text/csv");
-  });
-
-  btnImportJson.addEventListener("click", () => { importArea.value = ""; openModal(modalImport); });
-  btnCloseImport.addEventListener("click", () => closeModal(modalImport));
-  modalImport.addEventListener("click", (e) => { if (e.target === modalImport) closeModal(modalImport); });
-
-  btnDoImport.addEventListener("click", async () => {
-    try {
-      const data = JSON.parse(importArea.value);
-      if (!data || !Array.isArray(data.items)) throw new Error("Formato inválido.");
-      state.items = data.items;
-      state.settings = data.settings || { rate: num(rate.value) || 0 };
-      rate.value = state.settings.rate || "";
-      await saveCloudNow();
-      closeModal(modalImport);
-      render();
-    } catch (e) { setErr(e); alert("Error importando: " + (e.message || String(e))); }
-  });
-
-  btnClear.addEventListener("click", async () => {
-    if (!confirm("Borrar TODO el stock en la nube?")) return;
-    state.items = [];
-    state.settings = { rate: num(rate.value) || 0 };
-    await saveCloudNow();
-    render();
-  });
-
-  // Scanner
-  function openModal(m){ m.classList.add("open"); }
-  function closeModal(m){ m.classList.remove("open"); }
-
-  let stream=null, detector=null, scanTimer=null; const seen=new Set();
-
-  btnScanImei.addEventListener("click", async () => {
-    try {
-      if (!navigator.mediaDevices?.getUserMedia) return alert("Este navegador no permite cámara.");
-      if (!("BarcodeDetector" in window)) return alert("No soporta escaneo nativo. Probá Chrome.");
-
-      detector = new BarcodeDetector({ formats: ["qr_code","code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","data_matrix","pdf417"] });
-      openModal(modalScan);
-      foundList.innerHTML = "";
-      scanStatus.textContent = "Iniciando cámara…";
-      seen.clear();
-
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
-      video.srcObject = stream;
-      await video.play();
-      scanStatus.textContent = "Escaneando…";
-      scanLoop();
-    } catch (e) { setErr(e); alert("No se pudo escanear: " + (e.message || String(e))); stopScan(); }
-  });
-
-  btnStopScan.addEventListener("click", stopScan);
-  btnCloseScan.addEventListener("click", () => { stopScan(); closeModal(modalScan); });
-  modalScan.addEventListener("click", (e) => { if (e.target === modalScan) { stopScan(); closeModal(modalScan); } });
-
-  function stopScan(){
-    if (scanTimer) { cancelAnimationFrame(scanTimer); scanTimer=null; }
-    video?.pause?.();
-    stream?.getTracks?.().forEach(t=>t.stop());
-    stream=null;
-    scanStatus.textContent="Detenido.";
-  }
-
-  async function scanLoop(){
-    if (!detector || !video || video.readyState < 2) { scanTimer=requestAnimationFrame(scanLoop); return; }
-    try{
-      const barcodes = await detector.detect(video);
-      for (const bc of barcodes){
-        const raw=(bc.rawValue||"").trim();
-        if(!raw || seen.has(raw)) continue;
-        seen.add(raw);
-        const b=document.createElement("button");
-        b.type="button"; b.textContent=raw;
-        b.addEventListener("click",()=>{ imei.value=raw; stopScan(); closeModal(modalScan); });
-        foundList.prepend(b);
-        scanStatus.textContent=`Detectado: ${raw}`;
+    btnDoLogin.addEventListener("click", async () => {
+      loginMsg.textContent = "";
+      try {
+        await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPass.value);
+        closeModal(modalLogin);
+      } catch (e) {
+        loginMsg.textContent = "Error: " + (e.message || String(e));
       }
-    }catch{}
-    scanTimer=requestAnimationFrame(scanLoop);
-  }
+    });
 
-  // Helpers
-  function num(v){ const n = Number(String(v).replace(",", ".")); return Number.isFinite(n) ? n : 0; }
-  function clampInt(n,min,max){ n=Math.round(n); return Math.max(min, Math.min(max,n)); }
-  function fmtARS(n){ return (Number.isFinite(n)?n:0).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}); }
-  function fmtUSD(n){ return (Number.isFinite(n)?n:0).toLocaleString("es-AR",{style:"currency",currency:"USD",maximumFractionDigits:2}); }
-  function toISODate(d){ const z=new Date(d),y=z.getFullYear(),m=String(z.getMonth()+1).padStart(2,"0"),day=String(z.getDate()).padStart(2,"0"); return `${y}-${m}-${day}`; }
-  function cryptoId(){ return (crypto?.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2)+Date.now().toString(16))); }
-  function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
-  function downloadText(text, filename, mime){
-    const blob=new Blob([text],{type:mime}); const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  }
-  function csvCell(v){
-    const s = v===null||v===undefined ? "" : String(v);
-    const esc = s.replace(/"/g,'""');
-    return /[",\n]/.test(esc) ? `"${esc}"` : esc;
-  }
+    btnDoRegister.addEventListener("click", async () => {
+      loginMsg.textContent = "";
+      try {
+        await createUserWithEmailAndPassword(auth, loginEmail.value.trim(), loginPass.value);
+        closeModal(modalLogin);
+      } catch (e) {
+        loginMsg.textContent = "Error: " + (e.message || String(e));
+      }
+    });
 
-  render();
-</script>
+    btnLogout.addEventListener("click", async () => {
+      await signOut(auth);
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (unsub) { unsub(); unsub = null; }
+
+      if (!user) {
+        uid = null;
+        setEnabled(false);
+        setCloudStatus("warn", "Desconectado");
+        syncNote.textContent = "Iniciá sesión para sincronizar.";
+        state.settings = { rate: 0 };
+        state.items = [];
+        rate.value = "";
+        render();
+        return;
+      }
+
+      uid = user.uid;
+      setEnabled(true);
+      setCloudStatus("warn", "Conectado • Cargando…");
+      syncNote.textContent = "Cargando desde la nube…";
+
+      const snap = await getDoc(userDoc(uid));
+      if (!snap.exists()) {
+        await setDoc(userDoc(uid), { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
+      }
+
+      unsub = onSnapshot(userDoc(uid), (docSnap) => {
+        const data = docSnap.data() || {};
+        state.settings = data.settings || { rate: 0 };
+        state.items = Array.isArray(data.items) ? data.items : [];
+
+        rate.value = state.settings.rate || "";
+        setCloudStatus("ok", "Conectado");
+        syncNote.textContent = "✅ Sincronizado";
+        render();
+      }, (err) => {
+        console.error(err);
+        setCloudStatus("bad", "Error de nube");
+        syncNote.textContent = "❌ Error de sincronización";
+      });
+    });
+
+    function setEnabled(on){
+      [btnLogout, btnDemo, btnExportJson, btnImportJson, btnExportCsv, btnClear].forEach(b => b.disabled = !on);
+      btnLogin.disabled = on;
+
+      Array.from(form.querySelectorAll("input,select,button")).forEach(el => el.disabled = !on);
+      q.disabled = !on;
+      filterStatus.disabled = !on;
+      sortBy.disabled = !on;
+    }
+
+    /**********************************************************************
+     * ✅ TC CONGELADO EN VENDIDO
+     * - Si status === "Vendido" y existe soldRate, usa soldRate
+     * - Si no, usa TC global (rate)
+     **********************************************************************/
+    function effectiveRateFor(it){
+      const globalR = num(rate.value) || num(state.settings.rate) || 0;
+      if (it.status === "Vendido" && num(it.soldRate) > 0) return num(it.soldRate);
+      return globalR;
+    }
+
+    function calcWithRate(it) {
+      const r = effectiveRateFor(it);
+      const cArs = (it.costUsd || 0) * r;
+      const pArs = (it.priceUsd || 0) * r;
+      const gArs = pArs - cArs - (it.feesArs || 0);
+      const gUsd = r ? gArs / r : 0;
+      return { r, cArs, pArs, gArs, gUsd };
+    }
+
+    function recalcChips() {
+      const r = num(rate.value);
+      tcPill.textContent = r ? fmtARS(r) : "—";
+      const cUSD = num(costUsd.value);
+      const pUSD = num(priceUsd.value);
+      const fees = num(feesArs.value);
+      const cARS = cUSD * r;
+      const pARS = pUSD * r;
+      const gARS = pARS - cARS - fees;
+      const gUSD = r ? (gARS / r) : 0;
+
+      calcChips.innerHTML = `
+        <span class="chip">Costo ARS: <b class="money">${fmtARS(cARS)}</b></span>
+        <span class="chip">Precio ARS: <b class="money">${fmtARS(pARS)}</b></span>
+        <span class="chip">Ganancia ARS: <b class="money">${fmtARS(gARS)}</b></span>
+        <span class="chip">Ganancia USD: <b class="money">${fmtUSD(gUSD)}</b></span>
+      `;
+    }
+
+    ["input","change"].forEach(ev => rate.addEventListener(ev, async () => {
+      state.settings.rate = num(rate.value);
+      recalcChips();
+      render();
+      await saveCloudDebounced();
+    }));
+
+    ["input","change"].forEach(ev => {
+      [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener(ev, recalcChips));
+    });
+
+    /**********************************************************************
+     * ✅ Guardar item: congela TC si pasa a Vendido
+     **********************************************************************/
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      saveHint.textContent = "";
+
+      const item = buildItemFromForm();
+      if (!item) return;
+
+      if (editingId.value) {
+        const idx = state.items.findIndex(x => x.id === editingId.value);
+        if (idx >= 0) state.items[idx] = item;
+        saveHint.textContent = "✅ Equipo actualizado.";
+      } else {
+        state.items.unshift(item);
+        saveHint.textContent = "✅ Equipo agregado al stock.";
+      }
+
+      await saveCloudDebounced();
+      resetForm(false);
+      render();
+    });
+
+    btnReset.addEventListener("click", () => resetForm(true));
+
+    function resetForm(clearRate) {
+      editingId.value = "";
+      form.reset();
+      dateIn.value = toISODate(new Date());
+      feesArs.value = "0";
+      status.value = "Disponible";
+      condition.value = "Excelente";
+      if (!clearRate) rate.value = state.settings.rate || "";
+      recalcChips();
+    }
+
+    function buildItemFromForm() {
+      const globalR = num(rate.value);
+      if (!uid) {
+        alert("Iniciá sesión para usar la app.");
+        return null;
+      }
+      if (!model.value || !storage.value || !color.value || !globalR) {
+        alert("Completá: Modelo, GB, Color y Tipo de cambio.");
+        return null;
+      }
+
+      const cUSD = num(costUsd.value);
+      const pUSD = num(priceUsd.value);
+      if (cUSD <= 0 || pUSD <= 0) {
+        alert("Costo USD y Precio USD deben ser mayores a 0.");
+        return null;
+      }
+
+      const isEditing = !!editingId.value;
+      const prev = isEditing ? state.items.find(x => x.id === editingId.value) : null;
+
+      const newStatus = status.value;
+      const prevStatus = prev?.status || null;
+
+      // soldRate rules:
+      // - If already sold and has soldRate, keep it.
+      // - If transition to Vendido now, set soldRate = current global rate.
+      // - If creating new and status Vendido, set soldRate = current global rate.
+      let soldRate = prev?.soldRate ?? null;
+      let soldAt = prev?.soldAt ?? null;
+
+      const becomingSold = (newStatus === "Vendido") && (prevStatus !== "Vendido");
+      const isNewSold = (!prev && newStatus === "Vendido");
+
+      if (becomingSold || isNewSold) {
+        soldRate = globalR;
+        soldAt = Date.now();
+      }
+
+      const id = editingId.value || cryptoId();
+
+      return {
+        id,
+        model: model.value,
+        storageGB: Number(storage.value),
+        color: color.value.trim(),
+        battery: battery.value ? clampInt(Number(battery.value), 0, 100) : null,
+        condition: condition.value,
+        imei: imei.value.trim(),
+        supplier: supplier.value.trim(),
+        status: newStatus,
+        dateIn: dateIn.value || toISODate(new Date()),
+        costUsd: cUSD,
+        priceUsd: pUSD,
+        feesArs: num(feesArs.value),
+        notes: notes.value.trim(),
+
+        // ✅ Freeze fields
+        soldRate: soldRate,
+        soldAt: soldAt,
+
+        updatedAt: Date.now()
+      };
+    }
+
+    function editItem(id) {
+      const it = state.items.find(x => x.id === id);
+      if (!it) return;
+
+      editingId.value = it.id;
+      model.value = it.model;
+      storage.value = String(it.storageGB);
+      color.value = it.color;
+      battery.value = it.battery ?? "";
+      condition.value = it.condition;
+      imei.value = it.imei || "";
+      supplier.value = it.supplier || "";
+      status.value = it.status;
+      dateIn.value = it.dateIn || toISODate(new Date());
+      costUsd.value = it.costUsd;
+      priceUsd.value = it.priceUsd;
+      feesArs.value = it.feesArs || 0;
+      notes.value = it.notes || "";
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      saveHint.textContent = it.status === "Vendido" && num(it.soldRate) > 0
+        ? `✏️ Editando vendido (TC congelado: ${fmtARS(num(it.soldRate))}).`
+        : "✏️ Editando equipo. Guardá para aplicar cambios.";
+      recalcChips();
+    }
+
+    async function delItem(id) {
+      const it = state.items.find(x => x.id === id);
+      if (!it) return;
+      const ok = confirm(`¿Borrar "${it.model} ${it.storageGB}GB ${it.color}"?`);
+      if (!ok) return;
+
+      state.items = state.items.filter(x => x.id !== id);
+      await saveCloudDebounced();
+      render();
+    }
+
+    async function toggleStatus(id) {
+      const it = state.items.find(x => x.id === id);
+      if (!it) return;
+
+      const order = ["Disponible","Reservado","Vendido"];
+      const idx = order.indexOf(it.status);
+      const next = order[(idx + 1) % order.length];
+
+      // If transitioning to Vendido -> freeze rate
+      if (next === "Vendido" && it.status !== "Vendido") {
+        it.soldRate = num(rate.value) || num(state.settings.rate) || 0;
+        it.soldAt = Date.now();
+      }
+
+      it.status = next;
+      it.updatedAt = Date.now();
+
+      await saveCloudDebounced();
+      render();
+    }
+
+    /**********************************************************************
+     * ✅ Render / stats / filters
+     **********************************************************************/
+    function applyQuerySort(items) {
+      const qq = (q.value || "").trim().toLowerCase();
+      const st = filterStatus.value;
+
+      let out = items.filter(it => {
+        if (st && it.status !== st) return false;
+        if (!qq) return true;
+        const blob = [
+          it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes
+        ].join(" ").toLowerCase();
+        return blob.includes(qq);
+      });
+
+      const sort = sortBy.value;
+      const [key, dir] = sort.split("_");
+      const asc = dir === "asc";
+
+      out.sort((a,b) => {
+        let av, bv;
+        if (key === "dateIn") { av = a.dateIn || ""; bv = b.dateIn || ""; }
+        else if (key === "profit") { av = calcWithRate(a).gArs; bv = calcWithRate(b).gArs; }
+        else if (key === "price") { av = a.priceUsd; bv = b.priceUsd; }
+        else if (key === "model") {
+          av = (a.model + " " + a.storageGB).toLowerCase();
+          bv = (b.model + " " + b.storageGB).toLowerCase();
+        } else { av = a.updatedAt; bv = b.updatedAt; }
+
+        if (av < bv) return asc ? -1 : 1;
+        if (av > bv) return asc ? 1 : -1;
+        return 0;
+      });
+
+      countNote.textContent = `${out.length} resultado(s) • Total registros: ${state.items.length}`;
+      return out;
+    }
+
+    function renderTable(items) {
+      tbody.innerHTML = items.map(it => {
+        const { r, cArs, pArs, gArs, gUsd } = calcWithRate(it);
+        const name = `${escapeHtml(it.model)} • ${it.storageGB}GB • ${escapeHtml(it.color)}` +
+          (it.battery !== null ? ` • 🔋${it.battery}%` : "");
+        const imeiTxt = it.imei ? escapeHtml(it.imei) : `<span class="mini">—</span>`;
+        const profitClass = gArs >= 0 ? "b-ok" : "b-bad";
+        const rateNote = it.status === "Vendido"
+          ? `<span class="mini">TC congelado: ${fmtARS(num(it.soldRate)||r)}</span>`
+          : `<span class="mini">TC global: ${fmtARS(r)}</span>`;
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:900">${name}</div>
+              <div class="mini">${escapeHtml(it.condition)}${it.supplier ? " • " + escapeHtml(it.supplier) : ""}${it.notes ? " • " + escapeHtml(it.notes) : ""}</div>
+              <div>${rateNote}</div>
+            </td>
+            <td class="mini">${imeiTxt}</td>
+            <td>${badgeFor(it.status)}</td>
+            <td>
+              <div class="money"><b>${fmtUSD(it.costUsd)}</b></div>
+              <div class="mini money">${fmtARS(cArs)}</div>
+            </td>
+            <td>
+              <div class="money"><b>${fmtUSD(it.priceUsd)}</b></div>
+              <div class="mini money">${fmtARS(pArs)}</div>
+            </td>
+            <td>
+              <span class="badge ${profitClass}">${fmtARS(gArs)}</span>
+              <div class="mini money">${fmtUSD(gUsd)}</div>
+            </td>
+            <td class="mini">${escapeHtml(it.dateIn || "—")}</td>
+            <td>
+              <div class="row-actions">
+                <button data-edit="${it.id}">Editar</button>
+                <button data-toggle="${it.id}">Cambiar estado</button>
+                <button class="danger" data-del="${it.id}">Borrar</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      tbody.querySelectorAll("[data-edit]").forEach(btn => btn.addEventListener("click", () => editItem(btn.dataset.edit)));
+      tbody.querySelectorAll("[data-del]").forEach(btn => btn.addEventListener("click", () => delItem(btn.dataset.del)));
+      tbody.querySelectorAll("[data-toggle]").forEach(btn => btn.addEventListener("click", () => toggleStatus(btn.dataset.toggle)));
+    }
+
+    function renderStats() {
+      const items = state.items;
+      const avail = items.filter(x => x.status === "Disponible");
+      const reserved = items.filter(x => x.status === "Reservado");
+      const sold = items.filter(x => x.status === "Vendido");
+
+      const sumCalc = (arr, selector) => arr.reduce((acc, it) => acc + selector(calcWithRate(it), it), 0);
+
+      const investedARS = sumCalc([...avail, ...reserved], (c) => c.cArs);
+      const potentialProfitARS = sumCalc([...avail, ...reserved], (c) => c.gArs);
+
+      // Sold uses frozen rates by calcWithRate()
+      const soldProfitARS = sumCalc(sold, (c) => c.gArs);
+      const soldRevenueARS = sumCalc(sold, (c) => c.pArs);
+
+      stats.innerHTML = `
+        ${stat("Disponibles", avail.length, "En stock")}
+        ${stat("Reservados", reserved.length, "Pendientes")}
+        ${stat("Vendidos", sold.length, "TC congelado")}
+        ${stat("Invertido (ARS)", fmtARS(investedARS), "Disp + reserv")}
+        ${stat("Ganancia potencial (ARS)", fmtARS(potentialProfitARS), "No incluye vendidos")}
+        ${stat("Ganancia vendida (ARS)", fmtARS(soldProfitARS), "Histórico")}
+        ${stat("Facturación vendida (ARS)", fmtARS(soldRevenueARS), "Histórico")}
+        ${stat("Registros", items.length, "Total")}
+      `;
+    }
+
+    function render() {
+      renderStats();
+      renderTable(applyQuerySort([...state.items]));
+      recalcChips();
+    }
+
+    function stat(k, v, s) {
+      return `
+        <div class="stat">
+          <div class="k">${escapeHtml(k)}</div>
+          <div class="v">${typeof v === "number" ? v : escapeHtml(String(v))}</div>
+          <div class="s">${escapeHtml(s)}</div>
+        </div>
+      `;
+    }
+    function badgeFor(st) {
+      if (st === "Disponible") return `<span class="badge b-ok">Disponible</span>`;
+      if (st === "Reservado") return `<span class="badge b-warn">Reservado</span>`;
+      return `<span class="badge b-bad">Vendido</span>`;
+    }
+
+    [q, filterStatus, sortBy].forEach(el => {
+      el.addEventListener("input", render);
+      el.addEventListener("change", render);
+    });
+
+    /**********************************************************************
+     * ✅ Export / Import / Demo / Clear
+     **********************************************************************/
+    btnExportJson.addEventListener("click", () => {
+      const payload = JSON.stringify({ settings: state.settings, items: state.items }, null, 2);
+      downloadText(payload, `stock-backup-${toISODate(new Date())}.json`, "application/json");
+    });
+
+    btnExportCsv.addEventListener("click", () => {
+      const headers = [
+        "id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn",
+        "costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"
+      ];
+      const rows = state.items.map(it => headers.map(h => csvCell(it[h])));
+      const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      downloadText(csv, `stock-${toISODate(new Date())}.csv`, "text/csv");
+    });
+
+    btnImportJson.addEventListener("click", () => {
+      importArea.value = "";
+      openModal(modalImport);
+    });
+    btnCloseImport.addEventListener("click", () => closeModal(modalImport));
+    modalImport.addEventListener("click", (e) => { if (e.target === modalImport) closeModal(modalImport); });
+
+    btnDoImport.addEventListener("click", async () => {
+      try {
+        const data = JSON.parse(importArea.value);
+        if (!data || !Array.isArray(data.items)) throw new Error("Formato inválido. Debe tener {settings, items}.");
+        state.items = data.items;
+        state.settings = data.settings || state.settings || { rate: 0 };
+        rate.value = state.settings.rate || rate.value || "";
+        await saveCloudDebounced();
+        closeModal(modalImport);
+        render();
+        alert("✅ Importado a la nube.");
+      } catch (err) {
+        alert("Error al importar: " + (err.message || String(err)));
+      }
+    });
+
+    btnClear.addEventListener("click", async () => {
+      const ok = confirm("Esto borra TODO el stock en la nube (para tu usuario). ¿Continuar?");
+      if (!ok) return;
+      state.items = [];
+      state.settings = { rate: num(rate.value) || 0 };
+      await saveCloudDebounced();
+      render();
+    });
+
+    btnDemo.addEventListener("click", async () => {
+      const ok = confirm("¿Cargar datos demo? (Agrega arriba, no borra)");
+      if (!ok) return;
+
+      const r = num(rate.value) || 1200;
+      state.settings.rate = r;
+      rate.value = r;
+
+      const demo = [
+        mk("iPhone 13",128,"Blue",100,"Excelente","","Mayorista","Disponible", 330, 380, 0, "Con caja"),
+        mk("iPhone 14 Pro",128,"Black",92,"Excelente","","Canje","Reservado", 420, 480, 6000, "Garantía 30 días"),
+        mk("iPhone 15 Pro Max",256,"Natural Titanium",88,"Muy buena","","Mayorista","Disponible", 720, 780, 0, ""),
+        // vendido congela TC
+        mk("iPhone 11",64,"White",79,"Buena","","Particular","Vendido", 170, 220, 5000, "Probado antes de pagar", r),
+      ];
+      state.items = [...demo, ...state.items];
+      await saveCloudDebounced();
+      render();
+    });
+
+    function mk(model,gb,color,batt,cond,imei,supp,st,cusd,pusd,fees,notes, frozenRate=null){
+      const obj = {
+        id: cryptoId(),
+        model, storageGB: gb, color,
+        battery: batt, condition: cond,
+        imei: imei || "", supplier: supp || "",
+        status: st, dateIn: toISODate(new Date()),
+        costUsd: cusd, priceUsd: pusd, feesArs: fees,
+        notes: notes || "",
+        updatedAt: Date.now(),
+        soldRate: null,
+        soldAt: null,
+      };
+      if (st === "Vendido") {
+        obj.soldRate = num(frozenRate) || num(rate.value) || 0;
+        obj.soldAt = Date.now();
+      }
+      return obj;
+    }
+
+    /**********************************************************************
+     * ✅ Scanner (BarcodeDetector)
+     **********************************************************************/
+    function openModal(m){ m.classList.add("open"); }
+    function closeModal(m){ m.classList.remove("open"); }
+
+    let stream = null;
+    let detector = null;
+    let scanTimer = null;
+    const seen = new Set();
+
+    btnScanImei.addEventListener("click", async () => {
+      try {
+        if (!("mediaDevices" in navigator) || !navigator.mediaDevices.getUserMedia) {
+          alert("Este navegador no permite cámara.");
+          return;
+        }
+        if (!("BarcodeDetector" in window)) {
+          alert("Tu navegador no soporta escaneo nativo. Probá Chrome en Android/PC.");
+          return;
+        }
+
+        detector = new BarcodeDetector({
+          formats: ["qr_code","code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","data_matrix","pdf417"]
+        });
+
+        openModal(modalScan);
+        foundList.innerHTML = "";
+        scanStatus.textContent = "Iniciando cámara…";
+        seen.clear();
+
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false
+        });
+
+        video.srcObject = stream;
+        await video.play();
+        scanStatus.textContent = "Escaneando…";
+
+        scanLoop();
+      } catch (err) {
+        console.error(err);
+        alert("No se pudo iniciar el escaneo: " + (err.message || String(err)));
+        stopScan();
+      }
+    });
+
+    btnStopScan.addEventListener("click", stopScan);
+    btnCloseScan.addEventListener("click", () => { stopScan(); closeModal(modalScan); });
+    modalScan.addEventListener("click", (e) => { if (e.target === modalScan) { stopScan(); closeModal(modalScan); } });
+
+    function stopScan(){
+      if (scanTimer) { cancelAnimationFrame(scanTimer); scanTimer = null; }
+      if (video) video.pause();
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
+      scanStatus.textContent = "Detenido.";
+    }
+
+    async function scanLoop(){
+      if (!detector || !video || video.readyState < 2) {
+        scanTimer = requestAnimationFrame(scanLoop);
+        return;
+      }
+
+      try {
+        const barcodes = await detector.detect(video);
+        for (const bc of barcodes) {
+          const raw = (bc.rawValue || "").trim();
+          if (!raw) continue;
+          if (seen.has(raw)) continue;
+          seen.add(raw);
+
+          addFound(raw);
+          scanStatus.textContent = `Detectado: ${raw}`;
+        }
+      } catch (e) {}
+
+      scanTimer = requestAnimationFrame(scanLoop);
+    }
+
+    function addFound(value){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = value;
+      btn.addEventListener("click", () => {
+        imei.value = value;
+        stopScan();
+        closeModal(modalScan);
+      });
+      foundList.prepend(btn);
+    }
+
+    /**********************************************************************
+     * ✅ Helpers
+     **********************************************************************/
+    function num(v) {
+      const n = Number(String(v).replace(",", "."));
+      return Number.isFinite(n) ? n : 0;
+    }
+    function clampInt(n, min, max){
+      n = Math.round(n);
+      return Math.max(min, Math.min(max, n));
+    }
+    function fmtARS(n){
+      const v = Number.isFinite(n) ? n : 0;
+      return v.toLocaleString("es-AR", { style:"currency", currency:"ARS", maximumFractionDigits: 0 });
+    }
+    function fmtUSD(n){
+      const v = Number.isFinite(n) ? n : 0;
+      return v.toLocaleString("es-AR", { style:"currency", currency:"USD", maximumFractionDigits: 2 });
+    }
+    function toISODate(d){
+      const z = new Date(d);
+      const y = z.getFullYear();
+      const m = String(z.getMonth()+1).padStart(2,"0");
+      const day = String(z.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
+    function cryptoId(){
+      return (crypto?.randomUUID ? crypto.randomUUID() : ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16)));
+    }
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[c]));
+    }
+    function downloadText(text, filename, mime){
+      const blob = new Blob([text], { type: mime });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+    function csvCell(v){
+      const s = v === null || v === undefined ? "" : String(v);
+      const escaped = s.replace(/"/g,'""');
+      return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
+    }
+
+    // First render
+    render();
+  </script>
 </body>
 </html>
-
