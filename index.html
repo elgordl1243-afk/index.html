@@ -49,7 +49,7 @@
       font-size:12px;
       width:max-content;
     }
-    .pill strong{ color:var(--text); font-weight:700; }
+    .pill strong{ color:var(--text); font-weight:800; }
     .dot{
       width:8px; height:8px; border-radius:999px; display:inline-block;
       background: rgba(255,255,255,.35);
@@ -66,7 +66,7 @@
       border-radius:12px;
       cursor:pointer;
       transition:.15s ease;
-      font-weight:700;
+      font-weight:800;
       font-size:13px;
       display:inline-flex; align-items:center; gap:8px;
     }
@@ -156,7 +156,7 @@
       border-color: rgba(110,231,255,.5);
       box-shadow: 0 0 0 3px rgba(110,231,255,.12);
     }
-    .hint{ font-size:12px; color:var(--muted); margin-top:6px; }
+    .hint{ font-size:12px; color:var(--muted); margin-top:6px; line-height:1.35; }
 
     .chips{ display:flex; flex-wrap:wrap; gap:8px; }
     .chip{
@@ -227,6 +227,7 @@
     .inputWithBtn{ display:flex; gap:8px; }
     .inputWithBtn input{ flex:1; }
 
+    /* Modals */
     .modal{
       position:fixed; inset:0;
       background: rgba(0,0,0,.55);
@@ -255,6 +256,7 @@
     .panel .pb{ padding:14px; }
     .closex{ border-radius:999px; padding:8px 10px; }
 
+    /* Scanner */
     .scannerWrap{
       display:grid;
       grid-template-columns: 1fr .9fr;
@@ -277,6 +279,7 @@
     .list{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
     .list button{ justify-content:space-between; width:100%; }
 
+    /* Login */
     .loginGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -293,6 +296,18 @@
       line-height: 1.35;
     }
     .msg b{ color: var(--text); }
+    .err{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(251,113,133,.35);
+      background: rgba(251,113,133,.08);
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.35;
+      display:none;
+    }
+    .err.show{ display:block; }
   </style>
 </head>
 
@@ -314,7 +329,6 @@
       <div class="topbar">
         <button id="btnLogin" class="primary">🔐 Iniciar sesión</button>
         <button id="btnLogout" class="danger" disabled>Salir</button>
-        <button id="btnDemo" disabled>Cargar demo</button>
         <button id="btnExportJson" disabled>Export JSON</button>
         <button id="btnImportJson" disabled>Import JSON</button>
         <button id="btnExportCsv" disabled>Export CSV</button>
@@ -323,6 +337,7 @@
     </header>
 
     <div class="grid">
+      <!-- Left -->
       <section class="card">
         <div class="hd">
           <h2>Alta / Edición de equipo</h2>
@@ -452,6 +467,7 @@
         </div>
       </section>
 
+      <!-- Right -->
       <section class="card">
         <div class="hd">
           <h2>Stock</h2>
@@ -525,26 +541,32 @@
             <div class="row">
               <div class="field span-12">
                 <label>Email</label>
-                <input id="loginEmail" type="email" placeholder="tuemail@gmail.com" />
+                <input id="loginEmail" type="email" placeholder="tuemail@gmail.com" autocomplete="email" />
               </div>
               <div class="field span-12">
                 <label>Contraseña</label>
-                <input id="loginPass" type="password" placeholder="••••••••" />
+                <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" />
+                <div class="hint">Mínimo 6 caracteres.</div>
               </div>
             </div>
             <div class="row-actions">
               <button class="primary" id="btnDoLogin">Entrar</button>
               <button id="btnDoRegister">Crear cuenta</button>
             </div>
-            <div class="hint" id="loginMsg"></div>
+
+            <div id="loginErr" class="err"></div>
           </div>
 
           <div class="msg">
-            <b>Requisitos Firebase:</b><br><br>
-            1) Authentication → Email/Password habilitado<br>
-            2) Firestore creado<br>
-            3) Reglas recomendadas:<br><br>
-            <span class="kbd">match /users/{uid}/{document=**} allow read, write: if request.auth.uid==uid;</span>
+            <b>Si te da error “configuration-not-found”:</b><br>
+            Entrá a Firebase → <b>Authentication</b> → “Get started” → habilitá <b>Email/Password</b>.<br><br>
+
+            <b>Si te da error “unauthorized-domain”:</b><br>
+            Firebase → Authentication → Settings → Authorized domains<br>
+            Agregá: <span class="kbd">iphone32.netlify.app</span><br><br>
+
+            <b>Firestore Rules recomendadas:</b><br>
+            <span class="kbd">match /users/{uid}/{document=**} …</span>
           </div>
         </div>
       </div>
@@ -601,9 +623,10 @@
     </div>
   </div>
 
+  <!-- Firebase + App -->
   <script type="module">
     /**********************************************************************
-     * ✅ Firebase Config (TU CONFIG YA PEGADA)
+     * ✅ Firebase Config (TU CONFIG)
      **********************************************************************/
     const firebaseConfig = {
       apiKey: "AIzaSyBRQTpxrP3-0DiRD5N3knn9wGgwYX68H4w",
@@ -636,6 +659,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    /**********************************************************************
+     * ✅ State (en un doc por usuario)
+     **********************************************************************/
     const state = { settings: { rate: 0 }, items: [] };
     let uid = null;
     let unsub = null;
@@ -649,7 +675,6 @@
     const btnLogin = $("btnLogin");
     const btnLogout = $("btnLogout");
 
-    const btnDemo = $("btnDemo");
     const btnExportJson = $("btnExportJson");
     const btnImportJson = $("btnImportJson");
     const btnExportCsv = $("btnExportCsv");
@@ -661,7 +686,7 @@
     const loginPass = $("loginPass");
     const btnDoLogin = $("btnDoLogin");
     const btnDoRegister = $("btnDoRegister");
-    const loginMsg = $("loginMsg");
+    const loginErr = $("loginErr");
 
     const form = $("form");
     const model = $("model");
@@ -704,9 +729,10 @@
     const foundList = $("foundList");
     const scanStatus = $("scanStatus");
 
+    // init
     setEnabled(false);
     if (!dateIn.value) dateIn.value = toISODate(new Date());
-    feesArs.value = "0";
+    if (!feesArs.value) feesArs.value = "0";
 
     const userDoc = (uid) => doc(db, "users", uid, "app", "stock");
 
@@ -714,6 +740,15 @@
       cloudText.textContent = text;
       cloudDot.classList.remove("ok","warn","bad");
       cloudDot.classList.add(kind);
+    }
+
+    function showLoginError(msg){
+      loginErr.textContent = msg;
+      loginErr.classList.add("show");
+    }
+    function clearLoginError(){
+      loginErr.textContent = "";
+      loginErr.classList.remove("show");
     }
 
     let saveTimer = null;
@@ -742,34 +777,59 @@
       }, 450);
     }
 
+    // Modals
     btnLogin.addEventListener("click", () => openModal(modalLogin));
     btnCloseLogin.addEventListener("click", () => closeModal(modalLogin));
     modalLogin.addEventListener("click", (e) => { if (e.target === modalLogin) closeModal(modalLogin); });
 
+    // ✅ LOGIN (corregido: valida email + pass SI O SI)
     btnDoLogin.addEventListener("click", async () => {
-      loginMsg.textContent = "";
+      clearLoginError();
+
+      const email = (loginEmail.value || "").trim();
+      const pass = (loginPass.value || "");
+
+      if (!email) return showLoginError("Ingresá tu email.");
+      if (!pass || pass.length < 6) return showLoginError("Ingresá una contraseña (mínimo 6 caracteres).");
+
       try {
-        await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPass.value);
+        await signInWithEmailAndPassword(auth, email, pass);
         closeModal(modalLogin);
       } catch (e) {
-        loginMsg.textContent = "Error: " + (e.message || String(e));
+        console.error(e);
+        showLoginError(humanAuthError(e));
       }
     });
 
+    // ✅ REGISTER (corregido: valida email + pass SI O SI)
     btnDoRegister.addEventListener("click", async () => {
-      loginMsg.textContent = "";
+      clearLoginError();
+
+      const email = (loginEmail.value || "").trim();
+      const pass = (loginPass.value || "");
+
+      if (!email) return showLoginError("Ingresá tu email.");
+      if (!pass || pass.length < 6) return showLoginError("Creá una contraseña (mínimo 6 caracteres).");
+
       try {
-        await createUserWithEmailAndPassword(auth, loginEmail.value.trim(), loginPass.value);
+        await createUserWithEmailAndPassword(auth, email, pass);
         closeModal(modalLogin);
       } catch (e) {
-        loginMsg.textContent = "Error: " + (e.message || String(e));
+        console.error(e);
+        showLoginError(humanAuthError(e));
       }
+    });
+
+    // Enter key submits login
+    loginPass.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") btnDoLogin.click();
     });
 
     btnLogout.addEventListener("click", async () => {
       await signOut(auth);
     });
 
+    // AUTH state
     onAuthStateChanged(auth, async (user) => {
       if (unsub) { unsub(); unsub = null; }
 
@@ -812,7 +872,7 @@
     });
 
     function setEnabled(on){
-      [btnLogout, btnDemo, btnExportJson, btnImportJson, btnExportCsv, btnClear].forEach(b => b.disabled = !on);
+      [btnLogout, btnExportJson, btnImportJson, btnExportCsv, btnClear].forEach(b => b.disabled = !on);
       btnLogin.disabled = on;
 
       Array.from(form.querySelectorAll("input,select,button")).forEach(el => el.disabled = !on);
@@ -821,7 +881,9 @@
       sortBy.disabled = !on;
     }
 
-    // ✅ TC congelado para Vendido
+    /**********************************************************************
+     * ✅ TC CONGELADO EN VENDIDO
+     **********************************************************************/
     function effectiveRateFor(it){
       const globalR = num(rate.value) || num(state.settings.rate) || 0;
       if (it.status === "Vendido" && num(it.soldRate) > 0) return num(it.soldRate);
@@ -862,11 +924,17 @@
       render();
       await saveCloudDebounced();
     }));
-    ["input","change"].forEach(ev => [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener(ev, recalcChips)));
+    ["input","change"].forEach(ev => {
+      [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener(ev, recalcChips));
+    });
 
+    /**********************************************************************
+     * ✅ Guardar item: congela TC si pasa a Vendido
+     **********************************************************************/
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       saveHint.textContent = "";
+
       const item = buildItemFromForm();
       if (!item) return;
 
@@ -899,7 +967,8 @@
 
     function buildItemFromForm() {
       const globalR = num(rate.value);
-      if (!uid) { alert("Iniciá sesión."); return null; }
+      if (!uid) { alert("Iniciá sesión para usar la app."); return null; }
+
       if (!model.value || !storage.value || !color.value || !globalR) {
         alert("Completá: Modelo, GB, Color y Tipo de cambio.");
         return null;
@@ -907,7 +976,10 @@
 
       const cUSD = num(costUsd.value);
       const pUSD = num(priceUsd.value);
-      if (cUSD <= 0 || pUSD <= 0) { alert("Costo/Precio USD > 0."); return null; }
+      if (cUSD <= 0 || pUSD <= 0) {
+        alert("Costo USD y Precio USD deben ser mayores a 0.");
+        return null;
+      }
 
       const isEditing = !!editingId.value;
       const prev = isEditing ? state.items.find(x => x.id === editingId.value) : null;
@@ -915,6 +987,7 @@
       const newStatus = status.value;
       const prevStatus = prev?.status || null;
 
+      // Freeze rule
       let soldRate = prev?.soldRate ?? null;
       let soldAt = prev?.soldAt ?? null;
 
@@ -969,16 +1042,17 @@
       notes.value = it.notes || "";
 
       window.scrollTo({ top: 0, behavior: "smooth" });
-      saveHint.textContent = (it.status === "Vendido" && num(it.soldRate) > 0)
-        ? `✏️ Vendido (TC congelado: ${fmtARS(num(it.soldRate))}).`
-        : "✏️ Editando equipo.";
+      saveHint.textContent = it.status === "Vendido" && num(it.soldRate) > 0
+        ? `✏️ Editando vendido (TC congelado: ${fmtARS(num(it.soldRate))}).`
+        : "✏️ Editando equipo. Guardá para aplicar cambios.";
       recalcChips();
     }
 
     async function delItem(id) {
       const it = state.items.find(x => x.id === id);
       if (!it) return;
-      if (!confirm(`¿Borrar "${it.model} ${it.storageGB}GB ${it.color}"?`)) return;
+      const ok = confirm(`¿Borrar "${it.model} ${it.storageGB}GB ${it.color}"?`);
+      if (!ok) return;
 
       state.items = state.items.filter(x => x.id !== id);
       await saveCloudDebounced();
@@ -993,6 +1067,7 @@
       const idx = order.indexOf(it.status);
       const next = order[(idx + 1) % order.length];
 
+      // If transitioning to Vendido -> freeze rate
       if (next === "Vendido" && it.status !== "Vendido") {
         it.soldRate = num(rate.value) || num(state.settings.rate) || 0;
         it.soldAt = Date.now();
@@ -1005,6 +1080,9 @@
       render();
     }
 
+    /**********************************************************************
+     * ✅ Render / stats / filters
+     **********************************************************************/
     function applyQuerySort(items) {
       const qq = (q.value || "").trim().toLowerCase();
       const st = filterStatus.value;
@@ -1012,12 +1090,14 @@
       let out = items.filter(it => {
         if (st && it.status !== st) return false;
         if (!qq) return true;
-        const blob = [it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes]
-          .join(" ").toLowerCase();
+        const blob = [
+          it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes
+        ].join(" ").toLowerCase();
         return blob.includes(qq);
       });
 
-      const [key, dir] = sortBy.value.split("_");
+      const sort = sortBy.value;
+      const [key, dir] = sort.split("_");
       const asc = dir === "asc";
 
       out.sort((a,b) => {
@@ -1037,12 +1117,6 @@
 
       countNote.textContent = `${out.length} resultado(s) • Total registros: ${state.items.length}`;
       return out;
-    }
-
-    function badgeFor(st) {
-      if (st === "Disponible") return `<span class="badge b-ok">Disponible</span>`;
-      if (st === "Reservado") return `<span class="badge b-warn">Reservado</span>`;
-      return `<span class="badge b-bad">Vendido</span>`;
     }
 
     function renderTable(items) {
@@ -1065,9 +1139,18 @@
             </td>
             <td class="mini">${imeiTxt}</td>
             <td>${badgeFor(it.status)}</td>
-            <td><div class="money"><b>${fmtUSD(it.costUsd)}</b></div><div class="mini money">${fmtARS(cArs)}</div></td>
-            <td><div class="money"><b>${fmtUSD(it.priceUsd)}</b></div><div class="mini money">${fmtARS(pArs)}</div></td>
-            <td><span class="badge ${profitClass}">${fmtARS(gArs)}</span><div class="mini money">${fmtUSD(gUsd)}</div></td>
+            <td>
+              <div class="money"><b>${fmtUSD(it.costUsd)}</b></div>
+              <div class="mini money">${fmtARS(cArs)}</div>
+            </td>
+            <td>
+              <div class="money"><b>${fmtUSD(it.priceUsd)}</b></div>
+              <div class="mini money">${fmtARS(pArs)}</div>
+            </td>
+            <td>
+              <span class="badge ${profitClass}">${fmtARS(gArs)}</span>
+              <div class="mini money">${fmtUSD(gUsd)}</div>
+            </td>
             <td class="mini">${escapeHtml(it.dateIn || "—")}</td>
             <td>
               <div class="row-actions">
@@ -1095,6 +1178,7 @@
 
       const investedARS = sumCalc([...avail, ...reserved], (c) => c.cArs);
       const potentialProfitARS = sumCalc([...avail, ...reserved], (c) => c.gArs);
+
       const soldProfitARS = sumCalc(sold, (c) => c.gArs);
       const soldRevenueARS = sumCalc(sold, (c) => c.pArs);
 
@@ -1110,6 +1194,12 @@
       `;
     }
 
+    function render() {
+      renderStats();
+      renderTable(applyQuerySort([...state.items]));
+      recalcChips();
+    }
+
     function stat(k, v, s) {
       return `
         <div class="stat">
@@ -1120,10 +1210,10 @@
       `;
     }
 
-    function render() {
-      renderStats();
-      renderTable(applyQuerySort([...state.items]));
-      recalcChips();
+    function badgeFor(st) {
+      if (st === "Disponible") return `<span class="badge b-ok">Disponible</span>`;
+      if (st === "Reservado") return `<span class="badge b-warn">Reservado</span>`;
+      return `<span class="badge b-bad">Vendido</span>`;
     }
 
     [q, filterStatus, sortBy].forEach(el => {
@@ -1131,20 +1221,28 @@
       el.addEventListener("change", render);
     });
 
-    // Export/Import/Clear
+    /**********************************************************************
+     * ✅ Export / Import / Clear
+     **********************************************************************/
     btnExportJson.addEventListener("click", () => {
       const payload = JSON.stringify({ settings: state.settings, items: state.items }, null, 2);
       downloadText(payload, `stock-backup-${toISODate(new Date())}.json`, "application/json");
     });
 
     btnExportCsv.addEventListener("click", () => {
-      const headers = ["id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn","costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"];
+      const headers = [
+        "id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn",
+        "costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"
+      ];
       const rows = state.items.map(it => headers.map(h => csvCell(it[h])));
       const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
       downloadText(csv, `stock-${toISODate(new Date())}.csv`, "text/csv");
     });
 
-    btnImportJson.addEventListener("click", () => { importArea.value = ""; openModal(modalImport); });
+    btnImportJson.addEventListener("click", () => {
+      importArea.value = "";
+      openModal(modalImport);
+    });
     btnCloseImport.addEventListener("click", () => closeModal(modalImport));
     modalImport.addEventListener("click", (e) => { if (e.target === modalImport) closeModal(modalImport); });
 
@@ -1165,35 +1263,54 @@
     });
 
     btnClear.addEventListener("click", async () => {
-      if (!confirm("Esto borra TODO el stock en la nube (para tu usuario). ¿Continuar?")) return;
+      const ok = confirm("Esto borra TODO el stock en la nube (para tu usuario). ¿Continuar?");
+      if (!ok) return;
       state.items = [];
       state.settings = { rate: num(rate.value) || 0 };
       await saveCloudDebounced();
       render();
     });
 
-    // Scanner (BarcodeDetector)
+    /**********************************************************************
+     * ✅ Scanner (BarcodeDetector)
+     **********************************************************************/
     function openModal(m){ m.classList.add("open"); }
     function closeModal(m){ m.classList.remove("open"); }
 
-    let stream = null, detector = null, scanTimer = null;
+    let stream = null;
+    let detector = null;
+    let scanTimer = null;
     const seen = new Set();
 
     btnScanImei.addEventListener("click", async () => {
       try {
-        if (!navigator.mediaDevices?.getUserMedia) return alert("Este navegador no permite cámara.");
-        if (!("BarcodeDetector" in window)) return alert("No soporta escaneo nativo. Probá Chrome.");
+        if (!("mediaDevices" in navigator) || !navigator.mediaDevices.getUserMedia) {
+          alert("Este navegador no permite cámara.");
+          return;
+        }
+        if (!("BarcodeDetector" in window)) {
+          alert("Tu navegador no soporta escaneo nativo. Probá Chrome en Android/PC.");
+          return;
+        }
 
-        detector = new BarcodeDetector({ formats: ["qr_code","code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","data_matrix","pdf417"] });
+        detector = new BarcodeDetector({
+          formats: ["qr_code","code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","data_matrix","pdf417"]
+        });
+
         openModal(modalScan);
         foundList.innerHTML = "";
         scanStatus.textContent = "Iniciando cámara…";
         seen.clear();
 
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false
+        });
+
         video.srcObject = stream;
         await video.play();
         scanStatus.textContent = "Escaneando…";
+
         scanLoop();
       } catch (err) {
         console.error(err);
@@ -1208,9 +1325,11 @@
 
     function stopScan(){
       if (scanTimer) { cancelAnimationFrame(scanTimer); scanTimer = null; }
-      video?.pause?.();
-      stream?.getTracks?.().forEach(t => t.stop());
-      stream = null;
+      if (video) video.pause();
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
       scanStatus.textContent = "Detenido.";
     }
 
@@ -1219,16 +1338,20 @@
         scanTimer = requestAnimationFrame(scanLoop);
         return;
       }
+
       try {
         const barcodes = await detector.detect(video);
         for (const bc of barcodes) {
           const raw = (bc.rawValue || "").trim();
-          if (!raw || seen.has(raw)) continue;
+          if (!raw) continue;
+          if (seen.has(raw)) continue;
           seen.add(raw);
+
           addFound(raw);
           scanStatus.textContent = `Detectado: ${raw}`;
         }
-      } catch {}
+      } catch (e) {}
+
       scanTimer = requestAnimationFrame(scanLoop);
     }
 
@@ -1244,14 +1367,40 @@
       foundList.prepend(btn);
     }
 
-    // Helpers
-    function num(v) { const n = Number(String(v).replace(",", ".")); return Number.isFinite(n) ? n : 0; }
-    function clampInt(n, min, max){ n = Math.round(n); return Math.max(min, Math.min(max, n)); }
-    function fmtARS(n){ return (Number.isFinite(n)?n:0).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}); }
-    function fmtUSD(n){ return (Number.isFinite(n)?n:0).toLocaleString("es-AR",{style:"currency",currency:"USD",maximumFractionDigits:2}); }
-    function toISODate(d){ const z=new Date(d),y=z.getFullYear(),m=String(z.getMonth()+1).padStart(2,"0"),day=String(z.getDate()).padStart(2,"0"); return `${y}-${m}-${day}`; }
-    function cryptoId(){ return (crypto?.randomUUID ? crypto.randomUUID() : ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16))); }
-    function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
+    /**********************************************************************
+     * ✅ Helpers
+     **********************************************************************/
+    function num(v) {
+      const n = Number(String(v).replace(",", "."));
+      return Number.isFinite(n) ? n : 0;
+    }
+    function clampInt(n, min, max){
+      n = Math.round(n);
+      return Math.max(min, Math.min(max, n));
+    }
+    function fmtARS(n){
+      const v = Number.isFinite(n) ? n : 0;
+      return v.toLocaleString("es-AR", { style:"currency", currency:"ARS", maximumFractionDigits: 0 });
+    }
+    function fmtUSD(n){
+      const v = Number.isFinite(n) ? n : 0;
+      return v.toLocaleString("es-AR", { style:"currency", currency:"USD", maximumFractionDigits: 2 });
+    }
+    function toISODate(d){
+      const z = new Date(d);
+      const y = z.getFullYear();
+      const m = String(z.getMonth()+1).padStart(2,"0");
+      const day = String(z.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
+    function cryptoId(){
+      return (crypto?.randomUUID ? crypto.randomUUID() : ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16)));
+    }
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[c]));
+    }
     function downloadText(text, filename, mime){
       const blob = new Blob([text], { type: mime });
       const a = document.createElement("a");
@@ -1268,7 +1417,21 @@
       return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
     }
 
-    // First render
+    // Mensajes “humanos” para errores Auth
+    function humanAuthError(e){
+      const code = e?.code || "";
+      if (code === "auth/missing-password") return "Falta la contraseña. Escribila (mínimo 6 caracteres).";
+      if (code === "auth/weak-password") return "Contraseña débil. Usá mínimo 6 caracteres.";
+      if (code === "auth/invalid-email") return "Email inválido. Revisá el formato.";
+      if (code === "auth/email-already-in-use") return "Ese email ya existe. Tocá 'Entrar' en lugar de 'Crear cuenta'.";
+      if (code === "auth/user-not-found") return "Usuario no encontrado. Tocá 'Crear cuenta'.";
+      if (code === "auth/wrong-password") return "Contraseña incorrecta.";
+      if (code === "auth/unauthorized-domain") return "Dominio no autorizado. En Firebase → Authentication → Settings → Authorized domains agregá: iphone32.netlify.app";
+      if (code === "auth/configuration-not-found") return "Auth no está configurado. En Firebase → Authentication → 'Get started' y habilitá Email/Password.";
+      return `Error: ${code || (e?.message || "desconocido")}`;
+    }
+
+    // First render (logged out)
     render();
   </script>
 </body>
