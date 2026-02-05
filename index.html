@@ -642,17 +642,22 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
+    // ✅ CAMBIO 1: agregamos enableIndexedDbPersistence (caché offline = abre mucho más rápido)
+    // ✅ CAMBIO 2: sacamos getDoc y usamos SOLO onSnapshot (menos viajes a la nube al loguear)
     import {
       getFirestore,
       doc,
       setDoc,
-      getDoc,
-      onSnapshot
+      onSnapshot,
+      enableIndexedDbPersistence
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // ✅ Caché local (si falla por 2 pestañas abiertas, no pasa nada)
+    enableIndexedDbPersistence(db).catch(() => {});
 
     /**********************************************************************
      * ✅ State (en un doc por usuario)
@@ -793,6 +798,7 @@
       await signOut(auth);
     });
 
+    // ✅ LOGIN MÁS RÁPIDO: sin getDoc() y con cache
     onAuthStateChanged(auth, async (user) => {
       if (unsub) { unsub(); unsub = null; }
 
@@ -810,15 +816,18 @@
 
       uid = user.uid;
       setEnabled(true);
-      setCloudStatus("warn", "Conectado • Cargando…");
-      syncNote.textContent = "Cargando desde la nube…";
 
-      const snap = await getDoc(userDoc(uid));
-      if (!snap.exists()) {
-        await setDoc(userDoc(uid), { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
-      }
+      // UX: mostramos rápido “Conectado • Sincronizando…”
+      setCloudStatus("warn", "Conectado • Sincronizando…");
+      syncNote.textContent = "Sincronizando…";
 
-      unsub = onSnapshot(userDoc(uid), (docSnap) => {
+      unsub = onSnapshot(userDoc(uid), async (docSnap) => {
+        // Si el doc no existe, lo creamos UNA vez y listo (snapshot se vuelve a disparar)
+        if (!docSnap.exists()) {
+          await setDoc(userDoc(uid), { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
+          return;
+        }
+
         const data = docSnap.data() || {};
         state.settings = data.settings || { rate: 0 };
         state.items = Array.isArray(data.items) ? data.items : [];
@@ -1441,4 +1450,3 @@
   </script>
 </body>
 </html>
-
