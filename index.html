@@ -48,6 +48,7 @@
       color:var(--muted);
       font-size:12px;
       width:max-content;
+      flex-wrap:wrap;
     }
     .pill strong{ color:var(--text); font-weight:700; }
     .dot{
@@ -227,7 +228,6 @@
     .inputWithBtn{ display:flex; gap:8px; }
     .inputWithBtn input{ flex:1; }
 
-    /* Modals */
     .modal{
       position:fixed; inset:0;
       background: rgba(0,0,0,.55);
@@ -256,7 +256,6 @@
     .panel .pb{ padding:14px; }
     .closex{ border-radius:999px; padding:8px 10px; }
 
-    /* Scanner */
     .scannerWrap{
       display:grid;
       grid-template-columns: 1fr .9fr;
@@ -279,7 +278,6 @@
     .list{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
     .list button{ justify-content:space-between; width:100%; }
 
-    /* Login */
     .loginGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -311,6 +309,8 @@
           TC global (ARS/USD): <strong id="tcPill">—</strong>
           <span class="muted">•</span>
           <span class="muted">Vendido congela TC</span>
+          <span class="muted">•</span>
+          <span id="netMode" class="muted">—</span>
         </div>
       </div>
 
@@ -557,11 +557,12 @@
           </div>
 
           <div class="msg">
-            <b>Requisitos Firebase:</b><br><br>
+            <b>Firebase (checklist):</b><br><br>
             1) Authentication → Email/Password habilitado<br>
             2) Firestore creado<br>
-            3) Reglas recomendadas:<br><br>
-            <span class="kbd">match /users/{uid}/{document=**} allow read, write: if request.auth.uid==uid;</span>
+            3) Authorized domains: <span class="kbd">iphone32.netlify.app</span><br>
+            4) Reglas recomendadas:<br><br>
+            <span class="kbd">rules_version = '2'; service cloud.firestore { match /databases/{database}/documents { match /users/{uid}/{document=**} { allow read, write: if request.auth != null && request.auth.uid == uid; }}}</span>
           </div>
         </div>
       </div>
@@ -621,7 +622,7 @@
   <!-- Firebase + App -->
   <script type="module">
     /**********************************************************************
-     * ✅ Firebase Config (TU CONFIG YA PEGADA)
+     * ✅ Firebase Config
      **********************************************************************/
     const firebaseConfig = {
       apiKey: "AIzaSyBRQTpxrP3-0DiRD5N3knn9wGgwYX68H4w",
@@ -639,13 +640,14 @@
       onAuthStateChanged,
       signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
-      signOut
+      signOut,
+      setPersistence,
+      browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
-    // ✅ CAMBIO 1: agregamos enableIndexedDbPersistence (caché offline = abre mucho más rápido)
-    // ✅ CAMBIO 2: sacamos getDoc y usamos SOLO onSnapshot (menos viajes a la nube al loguear)
+    // ✅ Firestore: long-polling auto detect + persistence
     import {
-      getFirestore,
+      initializeFirestore,
       doc,
       setDoc,
       onSnapshot,
@@ -654,13 +656,26 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
-    // ✅ Caché local (si falla por 2 pestañas abiertas, no pasa nada)
-    enableIndexedDbPersistence(db).catch(() => {});
+    // ✅ Esto mejora MUCHÍSIMO en celular / iOS / redes raras
+    const db = initializeFirestore(app, {
+      experimentalAutoDetectLongPolling: true,
+      useFetchStreams: false
+    });
+
+    try {
+      await setPersistence(auth, browserLocalPersistence);
+    } catch(e){ /* no pasa nada */ }
+
+    try {
+      await enableIndexedDbPersistence(db);
+    } catch(e) {
+      // Si hay varias pestañas abiertas puede fallar. No es grave.
+      console.log("Persistence:", e?.message || e);
+    }
 
     /**********************************************************************
-     * ✅ State (en un doc por usuario)
+     * ✅ State
      **********************************************************************/
     const state = { settings: { rate: 0 }, items: [] };
     let uid = null;
@@ -671,10 +686,10 @@
     const cloudDot = $("cloudDot");
     const cloudText = $("cloudText");
     const syncNote = $("syncNote");
+    const netMode = $("netMode");
 
     const btnLogin = $("btnLogin");
     const btnLogout = $("btnLogout");
-
     const btnDemo = $("btnDemo");
     const btnExportJson = $("btnExportJson");
     const btnImportJson = $("btnImportJson");
@@ -767,7 +782,7 @@
           setCloudStatus("bad", "Error de nube");
           alert("Error guardando en la nube: " + (e.message || String(e)));
         }
-      }, 450);
+      }, 250); // ✅ más rápido
     }
 
     btnLogin.addEventListener("click", () => openModal(modalLogin));
@@ -794,11 +809,8 @@
       }
     });
 
-    btnLogout.addEventListener("click", async () => {
-      await signOut(auth);
-    });
+    btnLogout.addEventListener("click", async () => { await signOut(auth); });
 
-    // ✅ LOGIN MÁS RÁPIDO: sin getDoc() y con cache
     onAuthStateChanged(auth, async (user) => {
       if (unsub) { unsub(); unsub = null; }
 
@@ -806,6 +818,7 @@
         uid = null;
         setEnabled(false);
         setCloudStatus("warn", "Desconectado");
+        netMode.textContent = "—";
         syncNote.textContent = "Iniciá sesión para sincronizar.";
         state.settings = { rate: 0 };
         state.items = [];
@@ -816,31 +829,46 @@
 
       uid = user.uid;
       setEnabled(true);
+      setCloudStatus("warn", "Conectado • Cargando…");
+      syncNote.textContent = "Cargando desde la nube…";
+      netMode.textContent = "Conectando…";
 
-      // UX: mostramos rápido “Conectado • Sincronizando…”
-      setCloudStatus("warn", "Conectado • Sincronizando…");
-      syncNote.textContent = "Sincronizando…";
+      // ✅ Carga rápida: listener directo (sin getDoc previo)
+      unsub = onSnapshot(
+        userDoc(uid),
+        { includeMetadataChanges: true },
+        async (docSnap) => {
+          const data = docSnap.data() || null;
 
-      unsub = onSnapshot(userDoc(uid), async (docSnap) => {
-        // Si el doc no existe, lo creamos UNA vez y listo (snapshot se vuelve a disparar)
-        if (!docSnap.exists()) {
-          await setDoc(userDoc(uid), { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
-          return;
+          // Indicador: cache vs red
+          if (docSnap.metadata.fromCache) {
+            netMode.textContent = "Desde caché";
+            setCloudStatus("warn", "Conectado • Caché");
+          } else {
+            netMode.textContent = "En red";
+            setCloudStatus("ok", "Conectado");
+          }
+
+          // Si no existe, lo creamos UNA vez
+          if (!data) {
+            await setDoc(userDoc(uid), { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
+            return;
+          }
+
+          state.settings = data.settings || { rate: 0 };
+          state.items = Array.isArray(data.items) ? data.items : [];
+          rate.value = state.settings.rate || "";
+
+          syncNote.textContent = "✅ Sincronizado";
+          render();
+        },
+        (err) => {
+          console.error(err);
+          setCloudStatus("bad", "Error de nube");
+          netMode.textContent = "Error";
+          syncNote.textContent = "❌ Error de sincronización: " + (err?.code || err?.message || "desconocido");
         }
-
-        const data = docSnap.data() || {};
-        state.settings = data.settings || { rate: 0 };
-        state.items = Array.isArray(data.items) ? data.items : [];
-
-        rate.value = state.settings.rate || "";
-        setCloudStatus("ok", "Conectado");
-        syncNote.textContent = "✅ Sincronizado";
-        render();
-      }, (err) => {
-        console.error(err);
-        setCloudStatus("bad", "Error de nube");
-        syncNote.textContent = "❌ Error de sincronización";
-      });
+      );
     });
 
     function setEnabled(on){
@@ -854,9 +882,7 @@
       statsCurrency.disabled = !on;
     }
 
-    /**********************************************************************
-     * ✅ TC CONGELADO EN VENDIDO
-     **********************************************************************/
+    // ✅ TC congelado en vendido
     function effectiveRateFor(it){
       const globalR = num(rate.value) || num(state.settings.rate) || 0;
       if (it.status === "Vendido" && num(it.soldRate) > 0) return num(it.soldRate);
@@ -902,9 +928,7 @@
       [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener(ev, recalcChips));
     });
 
-    /**********************************************************************
-     * ✅ Guardar item: congela TC si pasa a Vendido
-     **********************************************************************/
+    // ✅ Guardar item
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       saveHint.textContent = "";
@@ -941,10 +965,7 @@
 
     function buildItemFromForm() {
       const globalR = num(rate.value);
-      if (!uid) {
-        alert("Iniciá sesión para usar la app.");
-        return null;
-      }
+      if (!uid) { alert("Iniciá sesión para usar la app."); return null; }
       if (!model.value || !storage.value || !color.value || !globalR) {
         alert("Completá: Modelo, GB, Color y Tipo de cambio.");
         return null;
@@ -952,10 +973,7 @@
 
       const cUSD = num(costUsd.value);
       const pUSD = num(priceUsd.value);
-      if (cUSD <= 0 || pUSD <= 0) {
-        alert("Costo USD y Precio USD deben ser mayores a 0.");
-        return null;
-      }
+      if (cUSD <= 0 || pUSD <= 0) { alert("Costo USD y Precio USD deben ser mayores a 0."); return null; }
 
       const isEditing = !!editingId.value;
       const prev = isEditing ? state.items.find(x => x.id === editingId.value) : null;
@@ -968,11 +986,7 @@
 
       const becomingSold = (newStatus === "Vendido") && (prevStatus !== "Vendido");
       const isNewSold = (!prev && newStatus === "Vendido");
-
-      if (becomingSold || isNewSold) {
-        soldRate = globalR;
-        soldAt = Date.now();
-      }
+      if (becomingSold || isNewSold) { soldRate = globalR; soldAt = Date.now(); }
 
       const id = editingId.value || cryptoId();
 
@@ -991,8 +1005,7 @@
         priceUsd: pUSD,
         feesArs: num(feesArs.value),
         notes: notes.value.trim(),
-        soldRate: soldRate,
-        soldAt: soldAt,
+        soldRate, soldAt,
         updatedAt: Date.now()
       };
     }
@@ -1054,9 +1067,6 @@
       render();
     }
 
-    /**********************************************************************
-     * ✅ Render / stats / filters
-     **********************************************************************/
     function applyQuerySort(items) {
       const qq = (q.value || "").trim().toLowerCase();
       const st = filterStatus.value;
@@ -1064,14 +1074,12 @@
       let out = items.filter(it => {
         if (st && it.status !== st) return false;
         if (!qq) return true;
-        const blob = [
-          it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes
-        ].join(" ").toLowerCase();
+        const blob = [it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes]
+          .join(" ").toLowerCase();
         return blob.includes(qq);
       });
 
-      const sort = sortBy.value;
-      const [key, dir] = sort.split("_");
+      const [key, dir] = (sortBy.value || "dateIn_desc").split("_");
       const asc = dir === "asc";
 
       out.sort((a,b) => {
@@ -1096,8 +1104,8 @@
     function renderTable(items) {
       tbody.innerHTML = items.map(it => {
         const { r, cArs, pArs, gArs, gUsd } = calcWithRate(it);
-        const name = `${escapeHtml(it.model)} • ${it.storageGB}GB • ${escapeHtml(it.color)}` +
-          (it.battery !== null ? ` • 🔋${it.battery}%` : "");
+        const name = `${escapeHtml(it.model)} • ${it.storageGB}GB • ${escapeHtml(it.color)}`
+          + (it.battery !== null ? ` • 🔋${it.battery}%` : "");
         const imeiTxt = it.imei ? escapeHtml(it.imei) : `<span class="mini">—</span>`;
         const profitClass = gArs >= 0 ? "b-ok" : "b-bad";
         const rateNote = it.status === "Vendido"
@@ -1142,7 +1150,6 @@
       tbody.querySelectorAll("[data-toggle]").forEach(btn => btn.addEventListener("click", () => toggleStatus(btn.dataset.toggle)));
     }
 
-    // ✅ Stats ARS / USD / Ambos (selector)
     function renderStats() {
       const items = state.items || [];
       const avail = items.filter(x => x.status === "Disponible");
@@ -1198,6 +1205,7 @@
         </div>
       `;
     }
+
     function badgeFor(st) {
       if (st === "Disponible") return `<span class="badge b-ok">Disponible</span>`;
       if (st === "Reservado") return `<span class="badge b-warn">Reservado</span>`;
@@ -1210,19 +1218,15 @@
     });
     statsCurrency.addEventListener("change", render);
 
-    /**********************************************************************
-     * ✅ Export / Import / Demo / Clear
-     **********************************************************************/
+    // Export / Import / Demo / Clear
     btnExportJson.addEventListener("click", () => {
       const payload = JSON.stringify({ settings: state.settings, items: state.items }, null, 2);
       downloadText(payload, `stock-backup-${toISODate(new Date())}.json`, "application/json");
     });
 
     btnExportCsv.addEventListener("click", () => {
-      const headers = [
-        "id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn",
-        "costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"
-      ];
+      const headers = ["id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn",
+        "costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"];
       const rows = state.items.map(it => headers.map(h => csvCell(it[h])));
       const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
       downloadText(csv, `stock-${toISODate(new Date())}.csv`, "text/csv");
@@ -1299,9 +1303,7 @@
       return obj;
     }
 
-    /**********************************************************************
-     * ✅ Scanner (BarcodeDetector)
-     **********************************************************************/
+    // Scanner
     function openModal(m){ m.classList.add("open"); }
     function closeModal(m){ m.classList.remove("open"); }
 
@@ -1366,7 +1368,6 @@
         scanTimer = requestAnimationFrame(scanLoop);
         return;
       }
-
       try {
         const barcodes = await detector.detect(video);
         for (const bc of barcodes) {
@@ -1374,12 +1375,10 @@
           if (!raw) continue;
           if (seen.has(raw)) continue;
           seen.add(raw);
-
           addFound(raw);
           scanStatus.textContent = `Detectado: ${raw}`;
         }
       } catch (e) {}
-
       scanTimer = requestAnimationFrame(scanLoop);
     }
 
@@ -1395,9 +1394,7 @@
       foundList.prepend(btn);
     }
 
-    /**********************************************************************
-     * ✅ Helpers
-     **********************************************************************/
+    // Helpers
     function num(v) {
       const n = Number(String(v).replace(",", "."));
       return Number.isFinite(n) ? n : 0;
