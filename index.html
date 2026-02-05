@@ -330,7 +330,19 @@
       <section class="card">
         <div class="hd">
           <h2>Alta / Edición de equipo</h2>
-          <div class="chips" id="calcChips"></div>
+
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+            <div class="chips" id="calcChips"></div>
+
+            <div style="display:flex; gap:8px; align-items:center">
+              <label style="font-size:12px;color:var(--muted)">Métricas:</label>
+              <select id="statsCurrency" style="width:auto; min-width:170px">
+                <option value="both">ARS + USD</option>
+                <option value="ars">Solo ARS</option>
+                <option value="usd">Solo USD</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <div class="bd">
@@ -713,6 +725,8 @@
     const foundList = $("foundList");
     const scanStatus = $("scanStatus");
 
+    const statsCurrency = $("statsCurrency");
+
     setEnabled(false);
     if (!dateIn.value) dateIn.value = toISODate(new Date());
     feesArs.value = "0";
@@ -828,12 +842,11 @@
       q.disabled = !on;
       filterStatus.disabled = !on;
       sortBy.disabled = !on;
+      statsCurrency.disabled = !on;
     }
 
     /**********************************************************************
      * ✅ TC CONGELADO EN VENDIDO
-     * - Si status === "Vendido" y existe soldRate, usa soldRate
-     * - Si no, usa TC global (rate)
      **********************************************************************/
     function effectiveRateFor(it){
       const globalR = num(rate.value) || num(state.settings.rate) || 0;
@@ -941,10 +954,6 @@
       const newStatus = status.value;
       const prevStatus = prev?.status || null;
 
-      // soldRate rules:
-      // - If already sold and has soldRate, keep it.
-      // - If transition to Vendido now, set soldRate = current global rate.
-      // - If creating new and status Vendido, set soldRate = current global rate.
       let soldRate = prev?.soldRate ?? null;
       let soldAt = prev?.soldAt ?? null;
 
@@ -973,11 +982,8 @@
         priceUsd: pUSD,
         feesArs: num(feesArs.value),
         notes: notes.value.trim(),
-
-        // ✅ Freeze fields
         soldRate: soldRate,
         soldAt: soldAt,
-
         updatedAt: Date.now()
       };
     }
@@ -1027,7 +1033,6 @@
       const idx = order.indexOf(it.status);
       const next = order[(idx + 1) % order.length];
 
-      // If transitioning to Vendido -> freeze rate
       if (next === "Vendido" && it.status !== "Vendido") {
         it.soldRate = num(rate.value) || num(state.settings.rate) || 0;
         it.soldAt = Date.now();
@@ -1128,29 +1133,43 @@
       tbody.querySelectorAll("[data-toggle]").forEach(btn => btn.addEventListener("click", () => toggleStatus(btn.dataset.toggle)));
     }
 
+    // ✅ Stats ARS / USD / Ambos (selector)
     function renderStats() {
-      const items = state.items;
+      const items = state.items || [];
       const avail = items.filter(x => x.status === "Disponible");
       const reserved = items.filter(x => x.status === "Reservado");
       const sold = items.filter(x => x.status === "Vendido");
+      const notSold = [...avail, ...reserved];
 
-      const sumCalc = (arr, selector) => arr.reduce((acc, it) => acc + selector(calcWithRate(it), it), 0);
+      const mode = statsCurrency?.value || "both";
+      const sum = (arr, fn) => arr.reduce((acc, it) => acc + fn(calcWithRate(it), it), 0);
 
-      const investedARS = sumCalc([...avail, ...reserved], (c) => c.cArs);
-      const potentialProfitARS = sumCalc([...avail, ...reserved], (c) => c.gArs);
+      const investedARS = sum(notSold, (c) => c.cArs);
+      const investedUSD = sum(notSold, (c, it) => num(it.costUsd || 0));
 
-      // Sold uses frozen rates by calcWithRate()
-      const soldProfitARS = sumCalc(sold, (c) => c.gArs);
-      const soldRevenueARS = sumCalc(sold, (c) => c.pArs);
+      const potProfitARS = sum(notSold, (c) => c.gArs);
+      const potProfitUSD = sum(notSold, (c) => c.gUsd);
+
+      const soldRevenueARS = sum(sold, (c) => c.pArs);
+      const soldRevenueUSD = sum(sold, (c, it) => num(it.priceUsd || 0));
+
+      const soldProfitARS = sum(sold, (c) => c.gArs);
+      const soldProfitUSD = sum(sold, (c) => c.gUsd);
+
+      const moneyView = (ars, usd) => {
+        if (mode === "ars") return `<div class="money">${fmtARS(ars)}</div>`;
+        if (mode === "usd") return `<div class="money">${fmtUSD(usd)}</div>`;
+        return `<div class="money">${fmtARS(ars)}</div><div class="mini money">${fmtUSD(usd)}</div>`;
+      };
 
       stats.innerHTML = `
         ${stat("Disponibles", avail.length, "En stock")}
         ${stat("Reservados", reserved.length, "Pendientes")}
         ${stat("Vendidos", sold.length, "TC congelado")}
-        ${stat("Invertido (ARS)", fmtARS(investedARS), "Disp + reserv")}
-        ${stat("Ganancia potencial (ARS)", fmtARS(potentialProfitARS), "No incluye vendidos")}
-        ${stat("Ganancia vendida (ARS)", fmtARS(soldProfitARS), "Histórico")}
-        ${stat("Facturación vendida (ARS)", fmtARS(soldRevenueARS), "Histórico")}
+        ${stat("Invertido", moneyView(investedARS, investedUSD), "Disp + reserv")}
+        ${stat("Ganancia potencial", moneyView(potProfitARS, potProfitUSD), "Disp + reserv")}
+        ${stat("Ganancia vendida", moneyView(soldProfitARS, soldProfitUSD), "Histórico")}
+        ${stat("Facturación vendida", moneyView(soldRevenueARS, soldRevenueUSD), "Histórico")}
         ${stat("Registros", items.length, "Total")}
       `;
     }
@@ -1165,7 +1184,7 @@
       return `
         <div class="stat">
           <div class="k">${escapeHtml(k)}</div>
-          <div class="v">${typeof v === "number" ? v : escapeHtml(String(v))}</div>
+          <div class="v">${typeof v === "number" ? v : v}</div>
           <div class="s">${escapeHtml(s)}</div>
         </div>
       `;
@@ -1180,6 +1199,7 @@
       el.addEventListener("input", render);
       el.addEventListener("change", render);
     });
+    statsCurrency.addEventListener("change", render);
 
     /**********************************************************************
      * ✅ Export / Import / Demo / Clear
@@ -1243,7 +1263,6 @@
         mk("iPhone 13",128,"Blue",100,"Excelente","","Mayorista","Disponible", 330, 380, 0, "Con caja"),
         mk("iPhone 14 Pro",128,"Black",92,"Excelente","","Canje","Reservado", 420, 480, 6000, "Garantía 30 días"),
         mk("iPhone 15 Pro Max",256,"Natural Titanium",88,"Muy buena","","Mayorista","Disponible", 720, 780, 0, ""),
-        // vendido congela TC
         mk("iPhone 11",64,"White",79,"Buena","","Particular","Vendido", 170, 220, 5000, "Probado antes de pagar", r),
       ];
       state.items = [...demo, ...state.items];
@@ -1422,3 +1441,4 @@
   </script>
 </body>
 </html>
+
