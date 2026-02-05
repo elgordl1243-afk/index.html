@@ -7,15 +7,9 @@
 
   <style>
     :root{
-      --bg:#0b0d12;
-      --text:#e8ecf6;
-      --muted:#9aa4bf;
-      --line:#24304a;
-      --ok:#34d399;
-      --warn:#fbbf24;
-      --bad:#fb7185;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 18px;
+      --bg:#0b0d12; --text:#e8ecf6; --muted:#9aa4bf; --line:#24304a;
+      --ok:#34d399; --warn:#fbbf24; --bad:#fb7185;
+      --shadow: 0 10px 30px rgba(0,0,0,.35); --radius: 18px;
     }
     *{ box-sizing:border-box; }
     body{
@@ -29,32 +23,20 @@
     .wrap{ max-width:1200px; margin:0 auto; padding:22px; }
     header{
       display:flex; gap:14px; align-items:flex-start; justify-content:space-between;
-      flex-wrap:wrap;
-      margin-bottom:16px;
+      flex-wrap:wrap; margin-bottom:16px;
     }
     .brand{ display:flex; flex-direction:column; gap:8px; }
     .brand h1{ margin:0; font-size:20px; display:flex; align-items:center; gap:10px; }
-
-    .topbar{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end;
-    }
+    .topbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
 
     .pill{
       display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px;
-      border:1px solid var(--line);
+      padding:8px 10px; border:1px solid var(--line);
       background: rgba(255,255,255,.03);
-      border-radius:999px;
-      color:var(--muted);
-      font-size:12px;
-      width:max-content;
-      flex-wrap:wrap;
+      border-radius:999px; color:var(--muted); font-size:12px; width:max-content;
     }
     .pill strong{ color:var(--text); font-weight:700; }
-    .dot{
-      width:8px; height:8px; border-radius:999px; display:inline-block;
-      background: rgba(255,255,255,.35);
-    }
+    .dot{ width:8px; height:8px; border-radius:999px; display:inline-block; background: rgba(255,255,255,.35); }
     .dot.ok{ background: rgba(52,211,153,.85); }
     .dot.warn{ background: rgba(251,191,36,.85); }
     .dot.bad{ background: rgba(251,113,133,.85); }
@@ -98,11 +80,7 @@
     .card .hd h2{ margin:0; font-size:14px; color:var(--text); }
     .card .bd{ padding:14px; }
 
-    .stats{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:10px;
-    }
+    .stats{ display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; }
     @media (max-width: 900px){ .stats{ grid-template-columns: repeat(2, 1fr);} }
     .stat{
       background: rgba(15,20,34,.7);
@@ -116,25 +94,14 @@
     .stat .v{ font-size:18px; font-weight:900; }
     .stat .s{ color:var(--muted); font-size:12px; }
 
-    .row{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .field{
-      grid-column: span 3;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
+    .row{ display:grid; grid-template-columns: repeat(12, 1fr); gap:10px; margin-bottom:10px; }
+    .field{ grid-column: span 3; display:flex; flex-direction:column; gap:6px; }
     .field.span-2{ grid-column: span 2; }
     .field.span-3{ grid-column: span 3; }
     .field.span-4{ grid-column: span 4; }
     .field.span-5{ grid-column: span 5; }
     .field.span-6{ grid-column: span 6; }
     .field.span-12{ grid-column: span 12; }
-
     @media (max-width: 980px){
       .field{ grid-column: span 6; }
       .field.span-2,.field.span-3,.field.span-4,.field.span-5,.field.span-6{ grid-column: span 6; }
@@ -170,39 +137,26 @@
       display:inline-flex; gap:6px; align-items:center;
     }
     .chip b{ color:var(--text); }
+
     .toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .tablewrap{ overflow:auto; border-radius: 16px; border:1px solid rgba(36,48,74,.7); }
-    table{
-      width:100%;
-      border-collapse: collapse;
-      min-width: 980px;
-      background: rgba(15,20,34,.55);
-    }
+    table{ width:100%; border-collapse: collapse; min-width: 980px; background: rgba(15,20,34,.55); }
     thead th{
-      text-align:left;
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-      padding:12px 10px;
-      border-bottom:1px solid rgba(36,48,74,.7);
+      text-align:left; font-size:12px; color:var(--muted); font-weight:800;
+      padding:12px 10px; border-bottom:1px solid rgba(36,48,74,.7);
       position:sticky; top:0;
-      background: rgba(15,20,34,.95);
-      backdrop-filter: blur(6px);
+      background: rgba(15,20,34,.95); backdrop-filter: blur(6px);
       white-space:nowrap;
     }
     tbody td{
       padding:12px 10px;
       border-bottom:1px solid rgba(36,48,74,.45);
-      font-size:13px;
-      vertical-align:top;
+      font-size:13px; vertical-align:top;
     }
     tbody tr:hover{ background: rgba(255,255,255,.03); }
     .badge{
-      display:inline-flex;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
+      display:inline-flex; padding:6px 10px; border-radius:999px;
+      font-size:12px; font-weight:900;
       border:1px solid rgba(36,48,74,.7);
       background: rgba(24,32,58,.75);
       white-space:nowrap;
@@ -216,26 +170,14 @@
     .split{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
     .row-actions{ display:flex; gap:8px; flex-wrap:wrap; }
     .row-actions button{ padding:8px 10px; border-radius:10px; }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:11px;
-      padding:2px 6px;
-      border:1px solid rgba(36,48,74,.7);
-      border-radius:8px;
-      color:var(--muted);
-      background: rgba(0,0,0,.2);
-    }
     .inputWithBtn{ display:flex; gap:8px; }
     .inputWithBtn input{ flex:1; }
 
+    /* Modals */
     .modal{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:50;
+      position:fixed; inset:0; background: rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center;
+      padding:18px; z-index:50;
     }
     .modal.open{ display:flex; }
     .panel{
@@ -247,46 +189,26 @@
       overflow:hidden;
     }
     .panel .ph{
-      padding:14px;
-      border-bottom:1px solid rgba(36,48,74,.7);
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      flex-wrap:wrap;
+      padding:14px; border-bottom:1px solid rgba(36,48,74,.7);
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
     }
     .panel .ph h3{ margin:0; font-size:14px; }
     .panel .pb{ padding:14px; }
     .closex{ border-radius:999px; padding:8px 10px; }
 
-    .scannerWrap{
-      display:grid;
-      grid-template-columns: 1fr .9fr;
-      gap:12px;
-      align-items:start;
-    }
+    /* Scanner */
+    .scannerWrap{ display:grid; grid-template-columns: 1fr .9fr; gap:12px; align-items:start; }
     @media (max-width: 980px){ .scannerWrap{ grid-template-columns:1fr; } }
-    video{
-      width:100%;
-      border-radius:16px;
-      border:1px solid rgba(36,48,74,.7);
-      background:#000;
-    }
-    .scanBox{
-      border:1px solid rgba(36,48,74,.7);
-      border-radius:16px;
-      padding:12px;
-      background: rgba(0,0,0,.18);
-    }
+    video{ width:100%; border-radius:16px; border:1px solid rgba(36,48,74,.7); background:#000; }
+    .scanBox{ border:1px solid rgba(36,48,74,.7); border-radius:16px; padding:12px; background: rgba(0,0,0,.18); }
     .list{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
     .list button{ justify-content:space-between; width:100%; }
 
-    .loginGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
+    /* Login */
+    .loginGrid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
     @media (max-width: 800px){ .loginGrid{ grid-template-columns:1fr; } }
     .msg{
-      padding:10px 12px;
-      border-radius: 14px;
+      padding:10px 12px; border-radius: 14px;
       border:1px solid rgba(36,48,74,.7);
       background: rgba(0,0,0,.18);
       color: var(--muted);
@@ -294,6 +216,15 @@
       line-height: 1.35;
     }
     .msg b{ color: var(--text); }
+
+    .netpill{ display:inline-flex; align-items:center; gap:8px; }
+    .netbadge{
+      padding:2px 8px; border-radius:999px;
+      border:1px solid rgba(36,48,74,.7);
+      background: rgba(0,0,0,.25);
+      color: var(--muted);
+      font-size:11px;
+    }
   </style>
 </head>
 
@@ -310,13 +241,16 @@
           <span class="muted">•</span>
           <span class="muted">Vendido congela TC</span>
           <span class="muted">•</span>
-          <span id="netMode" class="muted">—</span>
+          <span class="netpill">
+            <span class="netbadge" id="netMode">—</span>
+          </span>
         </div>
       </div>
 
       <div class="topbar">
         <button id="btnLogin" class="primary">🔐 Iniciar sesión</button>
         <button id="btnLogout" class="danger" disabled>Salir</button>
+        <button id="btnForce" disabled>🔄 Forzar servidor</button>
         <button id="btnDemo" disabled>Cargar demo</button>
         <button id="btnExportJson" disabled>Export JSON</button>
         <button id="btnImportJson" disabled>Import JSON</button>
@@ -557,12 +491,13 @@
           </div>
 
           <div class="msg">
-            <b>Firebase (checklist):</b><br><br>
+            <b>Requisitos Firebase:</b><br><br>
             1) Authentication → Email/Password habilitado<br>
             2) Firestore creado<br>
-            3) Authorized domains: <span class="kbd">iphone32.netlify.app</span><br>
-            4) Reglas recomendadas:<br><br>
-            <span class="kbd">rules_version = '2'; service cloud.firestore { match /databases/{database}/documents { match /users/{uid}/{document=**} { allow read, write: if request.auth != null && request.auth.uid == uid; }}}</span>
+            3) Reglas recomendadas:<br><br>
+            <span style="font-family:ui-monospace,monospace;font-size:11px">
+              match /users/{uid}/{document=**} { allow read, write: if request.auth.uid == uid; }
+            </span>
           </div>
         </div>
       </div>
@@ -622,7 +557,7 @@
   <!-- Firebase + App -->
   <script type="module">
     /**********************************************************************
-     * ✅ Firebase Config
+     * ✅ Firebase Config (TU CONFIG)
      **********************************************************************/
     const firebaseConfig = {
       apiKey: "AIzaSyBRQTpxrP3-0DiRD5N3knn9wGgwYX68H4w",
@@ -640,42 +575,25 @@
       onAuthStateChanged,
       signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
-      signOut,
-      setPersistence,
-      browserLocalPersistence
+      signOut
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
-    // ✅ Firestore: long-polling auto detect + persistence
+    // ✅ Import Firestore con getDocFromServer para evitar “cache eterno”
     import {
-      initializeFirestore,
+      getFirestore,
       doc,
       setDoc,
-      onSnapshot,
-      enableIndexedDbPersistence
+      getDoc,
+      getDocFromServer,
+      onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-
-    // ✅ Esto mejora MUCHÍSIMO en celular / iOS / redes raras
-    const db = initializeFirestore(app, {
-      experimentalAutoDetectLongPolling: true,
-      useFetchStreams: false
-    });
-
-    try {
-      await setPersistence(auth, browserLocalPersistence);
-    } catch(e){ /* no pasa nada */ }
-
-    try {
-      await enableIndexedDbPersistence(db);
-    } catch(e) {
-      // Si hay varias pestañas abiertas puede fallar. No es grave.
-      console.log("Persistence:", e?.message || e);
-    }
+    const db = getFirestore(app);
 
     /**********************************************************************
-     * ✅ State
+     * ✅ State (1 doc por usuario)
      **********************************************************************/
     const state = { settings: { rate: 0 }, items: [] };
     let uid = null;
@@ -690,6 +608,8 @@
 
     const btnLogin = $("btnLogin");
     const btnLogout = $("btnLogout");
+    const btnForce = $("btnForce");
+
     const btnDemo = $("btnDemo");
     const btnExportJson = $("btnExportJson");
     const btnImportJson = $("btnImportJson");
@@ -759,6 +679,9 @@
       cloudDot.classList.add(kind);
     }
 
+    /**********************************************************************
+     * ✅ Guardado optimizado (debounce)
+     **********************************************************************/
     let saveTimer = null;
     async function saveCloudDebounced() {
       if (!uid) return;
@@ -778,13 +701,55 @@
           setCloudStatus("ok", "Conectado • Guardado");
         } catch (e) {
           console.error(e);
-          syncNote.textContent = "❌ Error guardando";
+          syncNote.textContent = "❌ Error guardando: " + (e.code || e.message || e);
           setCloudStatus("bad", "Error de nube");
+          netMode.textContent = "Error red";
           alert("Error guardando en la nube: " + (e.message || String(e)));
         }
-      }, 250); // ✅ más rápido
+      }, 350);
     }
 
+    /**********************************************************************
+     * ✅ Forzar lectura desde servidor (evita “cache eterno” en celular)
+     **********************************************************************/
+    async function forceServerLoad() {
+      if (!uid) return;
+      try {
+        syncNote.textContent = "Forzando carga desde servidor…";
+        setCloudStatus("warn", "Conectado • Forzando…");
+        netMode.textContent = "Forzando…";
+
+        const snap = await getDocFromServer(userDoc(uid)); // ✅ ignora caché
+        const data = snap.data() || null;
+
+        if (!data) {
+          syncNote.textContent = "⚠️ No hay doc en servidor aún (guardá 1 vez).";
+          setCloudStatus("warn", "Conectado • Sin doc");
+          netMode.textContent = "Sin doc";
+          return;
+        }
+
+        state.settings = data.settings || { rate: 0 };
+        state.items = Array.isArray(data.items) ? data.items : [];
+        rate.value = state.settings.rate || "";
+
+        setCloudStatus("ok", "Conectado");
+        netMode.textContent = "En red (forzado)";
+        syncNote.textContent = "✅ Cargado desde servidor";
+        render();
+      } catch (e) {
+        console.error("forceServerLoad error:", e);
+        setCloudStatus("bad", "Error de nube");
+        netMode.textContent = "Error";
+        syncNote.textContent = "❌ No pudo cargar del servidor: " + (e.code || e.message || e);
+      }
+    }
+
+    btnForce.addEventListener("click", forceServerLoad);
+
+    /**********************************************************************
+     * ✅ Login UI
+     **********************************************************************/
     btnLogin.addEventListener("click", () => openModal(modalLogin));
     btnCloseLogin.addEventListener("click", () => closeModal(modalLogin));
     modalLogin.addEventListener("click", (e) => { if (e.target === modalLogin) closeModal(modalLogin); });
@@ -795,7 +760,7 @@
         await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPass.value);
         closeModal(modalLogin);
       } catch (e) {
-        loginMsg.textContent = "Error: " + (e.message || String(e));
+        loginMsg.textContent = "Error: " + (e.code || e.message || String(e));
       }
     });
 
@@ -805,12 +770,15 @@
         await createUserWithEmailAndPassword(auth, loginEmail.value.trim(), loginPass.value);
         closeModal(modalLogin);
       } catch (e) {
-        loginMsg.textContent = "Error: " + (e.message || String(e));
+        loginMsg.textContent = "Error: " + (e.code || e.message || String(e));
       }
     });
 
     btnLogout.addEventListener("click", async () => { await signOut(auth); });
 
+    /**********************************************************************
+     * ✅ Auth State + Sync (con metadata cache/red)
+     **********************************************************************/
     onAuthStateChanged(auth, async (user) => {
       if (unsub) { unsub(); unsub = null; }
 
@@ -830,28 +798,45 @@
       uid = user.uid;
       setEnabled(true);
       setCloudStatus("warn", "Conectado • Cargando…");
+      netMode.textContent = "Cargando…";
       syncNote.textContent = "Cargando desde la nube…";
-      netMode.textContent = "Conectando…";
 
-      // ✅ Carga rápida: listener directo (sin getDoc previo)
+      // Asegura doc (si hay red)
+      try{
+        const snap = await getDoc(userDoc(uid));
+        if (!snap.exists()) {
+          await setDoc(userDoc(uid), { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
+        }
+      } catch(e){
+        console.warn("getDoc init warning:", e);
+      }
+
+      // Listener con metadata
       unsub = onSnapshot(
         userDoc(uid),
         { includeMetadataChanges: true },
         async (docSnap) => {
           const data = docSnap.data() || null;
 
-          // Indicador: cache vs red
           if (docSnap.metadata.fromCache) {
             netMode.textContent = "Desde caché";
             setCloudStatus("warn", "Conectado • Caché");
+
+            // Si está en caché y vacío, intenta servidor (si hay internet)
+            if ((!data || !Array.isArray(data.items) || data.items.length === 0) && navigator.onLine) {
+              setTimeout(() => forceServerLoad(), 1200);
+            }
           } else {
             netMode.textContent = "En red";
             setCloudStatus("ok", "Conectado");
           }
 
-          // Si no existe, lo creamos UNA vez
           if (!data) {
-            await setDoc(userDoc(uid), { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
+            syncNote.textContent = "Doc no existe. Se creará al guardar.";
+            state.settings = { rate: 0 };
+            state.items = [];
+            rate.value = "";
+            render();
             return;
           }
 
@@ -869,10 +854,13 @@
           syncNote.textContent = "❌ Error de sincronización: " + (err?.code || err?.message || "desconocido");
         }
       );
+
+      // Primer forzado (mejora celular)
+      setTimeout(() => forceServerLoad(), 800);
     });
 
     function setEnabled(on){
-      [btnLogout, btnDemo, btnExportJson, btnImportJson, btnExportCsv, btnClear].forEach(b => b.disabled = !on);
+      [btnLogout, btnForce, btnDemo, btnExportJson, btnImportJson, btnExportCsv, btnClear].forEach(b => b.disabled = !on);
       btnLogin.disabled = on;
 
       Array.from(form.querySelectorAll("input,select,button")).forEach(el => el.disabled = !on);
@@ -882,7 +870,9 @@
       statsCurrency.disabled = !on;
     }
 
-    // ✅ TC congelado en vendido
+    /**********************************************************************
+     * ✅ TC CONGELADO EN VENDIDO
+     **********************************************************************/
     function effectiveRateFor(it){
       const globalR = num(rate.value) || num(state.settings.rate) || 0;
       if (it.status === "Vendido" && num(it.soldRate) > 0) return num(it.soldRate);
@@ -923,12 +913,13 @@
       render();
       await saveCloudDebounced();
     }));
-
     ["input","change"].forEach(ev => {
       [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener(ev, recalcChips));
     });
 
-    // ✅ Guardar item
+    /**********************************************************************
+     * ✅ Guardar item (congela TC si pasa a Vendido)
+     **********************************************************************/
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       saveHint.textContent = "";
@@ -967,10 +958,8 @@
       const globalR = num(rate.value);
       if (!uid) { alert("Iniciá sesión para usar la app."); return null; }
       if (!model.value || !storage.value || !color.value || !globalR) {
-        alert("Completá: Modelo, GB, Color y Tipo de cambio.");
-        return null;
+        alert("Completá: Modelo, GB, Color y Tipo de cambio."); return null;
       }
-
       const cUSD = num(costUsd.value);
       const pUSD = num(priceUsd.value);
       if (cUSD <= 0 || pUSD <= 0) { alert("Costo USD y Precio USD deben ser mayores a 0."); return null; }
@@ -986,6 +975,7 @@
 
       const becomingSold = (newStatus === "Vendido") && (prevStatus !== "Vendido");
       const isNewSold = (!prev && newStatus === "Vendido");
+
       if (becomingSold || isNewSold) { soldRate = globalR; soldAt = Date.now(); }
 
       const id = editingId.value || cryptoId();
@@ -1005,7 +995,8 @@
         priceUsd: pUSD,
         feesArs: num(feesArs.value),
         notes: notes.value.trim(),
-        soldRate, soldAt,
+        soldRate,
+        soldAt,
         updatedAt: Date.now()
       };
     }
@@ -1067,6 +1058,9 @@
       render();
     }
 
+    /**********************************************************************
+     * ✅ Render / stats / filtros
+     **********************************************************************/
     function applyQuerySort(items) {
       const qq = (q.value || "").trim().toLowerCase();
       const st = filterStatus.value;
@@ -1074,8 +1068,7 @@
       let out = items.filter(it => {
         if (st && it.status !== st) return false;
         if (!qq) return true;
-        const blob = [it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes]
-          .join(" ").toLowerCase();
+        const blob = [it.model, it.storageGB, it.color, it.imei, it.condition, it.supplier, it.notes].join(" ").toLowerCase();
         return blob.includes(qq);
       });
 
@@ -1104,8 +1097,8 @@
     function renderTable(items) {
       tbody.innerHTML = items.map(it => {
         const { r, cArs, pArs, gArs, gUsd } = calcWithRate(it);
-        const name = `${escapeHtml(it.model)} • ${it.storageGB}GB • ${escapeHtml(it.color)}`
-          + (it.battery !== null ? ` • 🔋${it.battery}%` : "");
+        const name = `${escapeHtml(it.model)} • ${it.storageGB}GB • ${escapeHtml(it.color)}` +
+          (it.battery !== null ? ` • 🔋${it.battery}%` : "");
         const imeiTxt = it.imei ? escapeHtml(it.imei) : `<span class="mini">—</span>`;
         const profitClass = gArs >= 0 ? "b-ok" : "b-bad";
         const rateNote = it.status === "Vendido"
@@ -1150,6 +1143,7 @@
       tbody.querySelectorAll("[data-toggle]").forEach(btn => btn.addEventListener("click", () => toggleStatus(btn.dataset.toggle)));
     }
 
+    // Stats ARS / USD / Ambos
     function renderStats() {
       const items = state.items || [];
       const avail = items.filter(x => x.status === "Disponible");
@@ -1205,37 +1199,31 @@
         </div>
       `;
     }
-
     function badgeFor(st) {
       if (st === "Disponible") return `<span class="badge b-ok">Disponible</span>`;
       if (st === "Reservado") return `<span class="badge b-warn">Reservado</span>`;
       return `<span class="badge b-bad">Vendido</span>`;
     }
 
-    [q, filterStatus, sortBy].forEach(el => {
-      el.addEventListener("input", render);
-      el.addEventListener("change", render);
-    });
+    [q, filterStatus, sortBy].forEach(el => { el.addEventListener("input", render); el.addEventListener("change", render); });
     statsCurrency.addEventListener("change", render);
 
-    // Export / Import / Demo / Clear
+    /**********************************************************************
+     * ✅ Export / Import / Demo / Clear
+     **********************************************************************/
     btnExportJson.addEventListener("click", () => {
       const payload = JSON.stringify({ settings: state.settings, items: state.items }, null, 2);
       downloadText(payload, `stock-backup-${toISODate(new Date())}.json`, "application/json");
     });
 
     btnExportCsv.addEventListener("click", () => {
-      const headers = ["id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn",
-        "costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"];
+      const headers = ["id","model","storageGB","color","battery","condition","imei","supplier","status","dateIn","costUsd","priceUsd","feesArs","notes","soldRate","soldAt","updatedAt"];
       const rows = state.items.map(it => headers.map(h => csvCell(it[h])));
       const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
       downloadText(csv, `stock-${toISODate(new Date())}.csv`, "text/csv");
     });
 
-    btnImportJson.addEventListener("click", () => {
-      importArea.value = "";
-      openModal(modalImport);
-    });
+    btnImportJson.addEventListener("click", () => { importArea.value = ""; openModal(modalImport); });
     btnCloseImport.addEventListener("click", () => closeModal(modalImport));
     modalImport.addEventListener("click", (e) => { if (e.target === modalImport) closeModal(modalImport); });
 
@@ -1296,14 +1284,13 @@
         soldRate: null,
         soldAt: null,
       };
-      if (st === "Vendido") {
-        obj.soldRate = num(frozenRate) || num(rate.value) || 0;
-        obj.soldAt = Date.now();
-      }
+      if (st === "Vendido") { obj.soldRate = num(frozenRate) || num(rate.value) || 0; obj.soldAt = Date.now(); }
       return obj;
     }
 
-    // Scanner
+    /**********************************************************************
+     * ✅ Scanner (BarcodeDetector)
+     **********************************************************************/
     function openModal(m){ m.classList.add("open"); }
     function closeModal(m){ m.classList.remove("open"); }
 
@@ -1315,28 +1302,20 @@
     btnScanImei.addEventListener("click", async () => {
       try {
         if (!("mediaDevices" in navigator) || !navigator.mediaDevices.getUserMedia) {
-          alert("Este navegador no permite cámara.");
-          return;
+          alert("Este navegador no permite cámara."); return;
         }
         if (!("BarcodeDetector" in window)) {
-          alert("Tu navegador no soporta escaneo nativo. Probá Chrome en Android/PC.");
-          return;
+          alert("Tu navegador no soporta escaneo nativo. Probá Chrome en Android/PC."); return;
         }
 
-        detector = new BarcodeDetector({
-          formats: ["qr_code","code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","data_matrix","pdf417"]
-        });
+        detector = new BarcodeDetector({ formats: ["qr_code","code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","data_matrix","pdf417"] });
 
         openModal(modalScan);
         foundList.innerHTML = "";
         scanStatus.textContent = "Iniciando cámara…";
         seen.clear();
 
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
-          audio: false
-        });
-
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
         video.srcObject = stream;
         await video.play();
         scanStatus.textContent = "Escaneando…";
@@ -1356,18 +1335,12 @@
     function stopScan(){
       if (scanTimer) { cancelAnimationFrame(scanTimer); scanTimer = null; }
       if (video) video.pause();
-      if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-        stream = null;
-      }
+      if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
       scanStatus.textContent = "Detenido.";
     }
 
     async function scanLoop(){
-      if (!detector || !video || video.readyState < 2) {
-        scanTimer = requestAnimationFrame(scanLoop);
-        return;
-      }
+      if (!detector || !video || video.readyState < 2) { scanTimer = requestAnimationFrame(scanLoop); return; }
       try {
         const barcodes = await detector.detect(video);
         for (const bc of barcodes) {
@@ -1394,38 +1367,19 @@
       foundList.prepend(btn);
     }
 
-    // Helpers
+    /**********************************************************************
+     * ✅ Helpers
+     **********************************************************************/
     function num(v) {
       const n = Number(String(v).replace(",", "."));
       return Number.isFinite(n) ? n : 0;
     }
-    function clampInt(n, min, max){
-      n = Math.round(n);
-      return Math.max(min, Math.min(max, n));
-    }
-    function fmtARS(n){
-      const v = Number.isFinite(n) ? n : 0;
-      return v.toLocaleString("es-AR", { style:"currency", currency:"ARS", maximumFractionDigits: 0 });
-    }
-    function fmtUSD(n){
-      const v = Number.isFinite(n) ? n : 0;
-      return v.toLocaleString("es-AR", { style:"currency", currency:"USD", maximumFractionDigits: 2 });
-    }
-    function toISODate(d){
-      const z = new Date(d);
-      const y = z.getFullYear();
-      const m = String(z.getMonth()+1).padStart(2,"0");
-      const day = String(z.getDate()).padStart(2,"0");
-      return `${y}-${m}-${day}`;
-    }
-    function cryptoId(){
-      return (crypto?.randomUUID ? crypto.randomUUID() : ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16)));
-    }
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, (c) => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[c]));
-    }
+    function clampInt(n, min, max){ n = Math.round(n); return Math.max(min, Math.min(max, n)); }
+    function fmtARS(n){ const v = Number.isFinite(n) ? n : 0; return v.toLocaleString("es-AR", { style:"currency", currency:"ARS", maximumFractionDigits: 0 }); }
+    function fmtUSD(n){ const v = Number.isFinite(n) ? n : 0; return v.toLocaleString("es-AR", { style:"currency", currency:"USD", maximumFractionDigits: 2 }); }
+    function toISODate(d){ const z = new Date(d); const y=z.getFullYear(); const m=String(z.getMonth()+1).padStart(2,"0"); const day=String(z.getDate()).padStart(2,"0"); return `${y}-${m}-${day}`; }
+    function cryptoId(){ return (crypto?.randomUUID ? crypto.randomUUID() : ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16))); }
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
     function downloadText(text, filename, mime){
       const blob = new Blob([text], { type: mime });
       const a = document.createElement("a");
@@ -1441,6 +1395,17 @@
       const escaped = s.replace(/"/g,'""');
       return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
     }
+
+    // Acciones tabla
+    function wireTableActions(){
+      tbody.querySelectorAll("[data-edit]").forEach(btn => btn.addEventListener("click", () => editItem(btn.dataset.edit)));
+      tbody.querySelectorAll("[data-del]").forEach(btn => btn.addEventListener("click", () => delItem(btn.dataset.del)));
+      tbody.querySelectorAll("[data-toggle]").forEach(btn => btn.addEventListener("click", () => toggleStatus(btn.dataset.toggle)));
+    }
+
+    // Rewire dentro del renderTable (por seguridad)
+    const _renderTable = renderTable;
+    renderTable = (items) => { _renderTable(items); wireTableActions(); };
 
     // First render
     render();
