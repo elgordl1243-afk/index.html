@@ -3,249 +3,66 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Control de Stock iPhone — Cloud</title>
-
+  <title>Control de Stock iPhone — Cloud (Neon)</title>
   <style>
-    :root{
-      --bg:#0b0d12; --text:#e8ecf6; --muted:#9aa4bf; --line:#24304a;
-      --ok:#34d399; --warn:#fbbf24; --bad:#fb7185;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 18px;
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: radial-gradient(1200px 600px at 20% 0%, rgba(110,231,255,.10), transparent 55%),
-                  radial-gradient(1200px 600px at 80% 0%, rgba(167,139,250,.10), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-    }
-    .wrap{ max-width:1200px; margin:0 auto; padding:22px; }
-    header{
-      display:flex; gap:14px; align-items:flex-start; justify-content:space-between;
-      flex-wrap:wrap; margin-bottom:16px;
-    }
-    .brand{ display:flex; flex-direction:column; gap:8px; }
-    .brand h1{ margin:0; font-size:20px; display:flex; align-items:center; gap:10px; }
-    .topbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
-
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      border-radius:999px;
-      color:var(--muted);
-      font-size:12px;
-      width:max-content;
-    }
-    .pill strong{ color:var(--text); font-weight:700; }
-    .dot{ width:8px; height:8px; border-radius:999px; display:inline-block; background: rgba(255,255,255,.35); }
-    .dot.ok{ background: rgba(52,211,153,.85); }
-    .dot.warn{ background: rgba(251,191,36,.85); }
-    .dot.bad{ background: rgba(251,113,133,.85); }
-
-    button{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      transition:.15s ease;
-      font-weight:700;
-      font-size:13px;
-      display:inline-flex; align-items:center; gap:8px;
-    }
-    button:hover{ transform:translateY(-1px); border-color:#34507a; }
-    button.primary{
-      background: linear-gradient(135deg, rgba(110,231,255,.20), rgba(167,139,250,.20));
-      border-color: rgba(110,231,255,.35);
-    }
-    button.danger{ border-color: rgba(251,113,133,.35); }
-    button:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
-
-    .grid{ display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }
-    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .card .hd{
-      padding:14px 14px 10px;
-      border-bottom:1px solid rgba(36,48,74,.7);
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      flex-wrap:wrap;
-    }
-    .card .hd h2{ margin:0; font-size:14px; color:var(--text); }
-    .card .bd{ padding:14px; }
-
-    .stats{ display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; }
-    @media (max-width: 900px){ .stats{ grid-template-columns: repeat(2, 1fr);} }
-    .stat{
-      background: rgba(15,20,34,.7);
-      border:1px solid rgba(36,48,74,.7);
-      border-radius: 16px;
-      padding:12px;
-      min-height:74px;
-      display:flex; flex-direction:column; justify-content:space-between;
-    }
-    .stat .k{ color:var(--muted); font-size:12px; }
-    .stat .v{ font-size:18px; font-weight:900; }
-    .stat .s{ color:var(--muted); font-size:12px; }
-
-    .row{ display:grid; grid-template-columns: repeat(12, 1fr); gap:10px; margin-bottom:10px; }
-    .field{ grid-column: span 3; display:flex; flex-direction:column; gap:6px; }
-    .field.span-2{ grid-column: span 2; }
-    .field.span-3{ grid-column: span 3; }
-    .field.span-4{ grid-column: span 4; }
-    .field.span-5{ grid-column: span 5; }
-    .field.span-6{ grid-column: span 6; }
-    .field.span-12{ grid-column: span 12; }
-
-    @media (max-width: 980px){
-      .field{ grid-column: span 6; }
-      .field.span-2,.field.span-3,.field.span-4,.field.span-5,.field.span-6{ grid-column: span 6; }
-      .field.span-12{ grid-column: span 12; }
-    }
-    @media (max-width: 520px){ .field{ grid-column: span 12; } }
-
-    label{ font-size:12px; color:var(--muted); }
-    input, select, textarea{
-      width:100%;
-      padding:10px 10px;
-      border-radius: 12px;
-      border:1px solid rgba(36,48,74,.9);
-      background: rgba(0,0,0,.18);
-      color:var(--text);
-      outline:none;
-      font-size:13px;
-    }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(110,231,255,.5);
-      box-shadow: 0 0 0 3px rgba(110,231,255,.12);
-    }
-    .hint{ font-size:12px; color:var(--muted); margin-top:6px; }
-
-    .chips{ display:flex; flex-wrap:wrap; gap:8px; }
-    .chip{
-      padding:6px 10px;
-      border-radius:999px;
-      background: rgba(24,32,58,.75);
-      border:1px solid rgba(36,48,74,.7);
-      font-size:12px;
-      color:var(--muted);
-      display:inline-flex; gap:6px; align-items:center;
-    }
-    .chip b{ color:var(--text); }
-    .toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .tablewrap{ overflow:auto; border-radius: 16px; border:1px solid rgba(36,48,74,.7); }
-    table{
-      width:100%; border-collapse: collapse; min-width: 980px;
-      background: rgba(15,20,34,.55);
-    }
-    thead th{
-      text-align:left; font-size:12px; color:var(--muted); font-weight:800;
-      padding:12px 10px; border-bottom:1px solid rgba(36,48,74,.7);
-      position:sticky; top:0;
-      background: rgba(15,20,34,.95);
-      backdrop-filter: blur(6px);
-      white-space:nowrap;
-    }
-    tbody td{
-      padding:12px 10px; border-bottom:1px solid rgba(36,48,74,.45);
-      font-size:13px; vertical-align:top;
-    }
-    tbody tr:hover{ background: rgba(255,255,255,.03); }
-    .badge{
-      display:inline-flex; padding:6px 10px; border-radius:999px;
-      font-size:12px; font-weight:900;
-      border:1px solid rgba(36,48,74,.7);
-      background: rgba(24,32,58,.75);
-      white-space:nowrap;
-    }
-    .b-ok{ color:var(--ok); border-color: rgba(52,211,153,.35); }
-    .b-warn{ color:var(--warn); border-color: rgba(251,191,36,.35); }
-    .b-bad{ color:var(--bad); border-color: rgba(251,113,133,.35); }
-    .mini{ color:var(--muted); font-size:12px; white-space:nowrap; }
-    .money{ font-variant-numeric: tabular-nums; white-space:nowrap; }
-    .split{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
-    .row-actions{ display:flex; gap:8px; flex-wrap:wrap; }
-    .row-actions button{ padding:8px 10px; border-radius:10px; }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:11px;
-      padding:2px 6px;
-      border:1px solid rgba(36,48,74,.7);
-      border-radius:8px;
-      color:var(--muted);
-      background: rgba(0,0,0,.2);
-    }
-    .inputWithBtn{ display:flex; gap:8px; }
-    .inputWithBtn input{ flex:1; }
-
-    .modal{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:50;
-    }
-    .modal.open{ display:flex; }
-    .panel{
-      width:min(920px, 100%);
-      background: linear-gradient(180deg, rgba(18,23,38,.98), rgba(15,20,34,.96));
-      border:1px solid rgba(36,48,74,.9);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .panel .ph{
-      padding:14px;
-      border-bottom:1px solid rgba(36,48,74,.7);
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      flex-wrap:wrap;
-    }
-    .panel .ph h3{ margin:0; font-size:14px; }
-    .panel .pb{ padding:14px; }
-    .closex{ border-radius:999px; padding:8px 10px; }
-
-    .scannerWrap{ display:grid; grid-template-columns: 1fr .9fr; gap:12px; align-items:start; }
-    @media (max-width: 980px){ .scannerWrap{ grid-template-columns:1fr; } }
-    video{
-      width:100%;
-      border-radius:16px;
-      border:1px solid rgba(36,48,74,.7);
-      background:#000;
-    }
-    .scanBox{
-      border:1px solid rgba(36,48,74,.7);
-      border-radius:16px;
-      padding:12px;
-      background: rgba(0,0,0,.18);
-    }
-    .list{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
-    .list button{ justify-content:space-between; width:100%; }
-
-    .loginGrid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    @media (max-width: 800px){ .loginGrid{ grid-template-columns:1fr; } }
-    .msg{
-      padding:10px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(36,48,74,.7);
-      background: rgba(0,0,0,.18);
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-    .msg b{ color: var(--text); }
+    :root{--bg:#0b0d12;--text:#e8ecf6;--muted:#9aa4bf;--line:#24304a;--ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--shadow:0 10px 30px rgba(0,0,0,.35);--radius:18px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:radial-gradient(1200px 600px at 20% 0%, rgba(110,231,255,.10), transparent 55%),radial-gradient(1200px 600px at 80% 0%, rgba(167,139,250,.10), transparent 55%),var(--bg);color:var(--text)}
+    .wrap{max-width:1200px;margin:0 auto;padding:22px}
+    header{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+    .brand{display:flex;flex-direction:column;gap:8px}
+    .brand h1{margin:0;font-size:20px;display:flex;align-items:center;gap:10px}
+    .topbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:999px;color:var(--muted);font-size:12px;width:max-content}
+    .pill strong{color:var(--text);font-weight:700}
+    .dot{width:8px;height:8px;border-radius:999px;display:inline-block;background:rgba(255,255,255,.35)}
+    .dot.ok{background:rgba(52,211,153,.85)}
+    .dot.warn{background:rgba(251,191,36,.85)}
+    .dot.bad{background:rgba(251,113,133,.85)}
+    button{border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer;transition:.15s ease;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:8px}
+    button:hover{transform:translateY(-1px);border-color:#34507a}
+    button.primary{background:linear-gradient(135deg, rgba(110,231,255,.20), rgba(167,139,250,.20));border-color:rgba(110,231,255,.35)}
+    button.danger{border-color:rgba(251,113,133,.35)}
+    button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .card .hd{padding:14px 14px 10px;border-bottom:1px solid rgba(36,48,74,.7);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .card .hd h2{margin:0;font-size:14px;color:var(--text)}
+    .card .bd{padding:14px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    @media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+    .stat{background:rgba(15,20,34,.7);border:1px solid rgba(36,48,74,.7);border-radius:16px;padding:12px;min-height:74px;display:flex;flex-direction:column;justify-content:space-between}
+    .stat .k{color:var(--muted);font-size:12px}
+    .stat .v{font-size:18px;font-weight:900}
+    .stat .s{color:var(--muted);font-size:12px}
+    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-bottom:10px}
+    .field{grid-column:span 3;display:flex;flex-direction:column;gap:6px}
+    .field.span-2{grid-column:span 2}.field.span-3{grid-column:span 3}.field.span-6{grid-column:span 6}.field.span-12{grid-column:span 12}
+    @media (max-width:980px){.field{grid-column:span 6}.field.span-2,.field.span-3,.field.span-6{grid-column:span 6}.field.span-12{grid-column:span 12}}
+    @media (max-width:520px){.field{grid-column:span 12}}
+    label{font-size:12px;color:var(--muted)}
+    input,select{width:100%;padding:10px 10px;border-radius:12px;border:1px solid rgba(36,48,74,.9);background:rgba(0,0,0,.18);color:var(--text);outline:none;font-size:13px}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{padding:6px 10px;border-radius:999px;background:rgba(24,32,58,.75);border:1px solid rgba(36,48,74,.7);font-size:12px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
+    .chip b{color:var(--text)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .tablewrap{overflow:auto;border-radius:16px;border:1px solid rgba(36,48,74,.7)}
+    table{width:100%;border-collapse:collapse;min-width:980px;background:rgba(15,20,34,.55)}
+    thead th{text-align:left;font-size:12px;color:var(--muted);font-weight:800;padding:12px 10px;border-bottom:1px solid rgba(36,48,74,.7);position:sticky;top:0;background:rgba(15,20,34,.95);backdrop-filter:blur(6px);white-space:nowrap}
+    tbody td{padding:12px 10px;border-bottom:1px solid rgba(36,48,74,.45);font-size:13px;vertical-align:top}
+    .badge{display:inline-flex;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid rgba(36,48,74,.7);background:rgba(24,32,58,.75);white-space:nowrap}
+    .b-ok{color:var(--ok);border-color:rgba(52,211,153,.35)}
+    .b-warn{color:var(--warn);border-color:rgba(251,191,36,.35)}
+    .b-bad{color:var(--bad);border-color:rgba(251,113,133,.35)}
+    .mini{color:var(--muted);font-size:12px;white-space:nowrap}
+    .money{font-variant-numeric:tabular-nums;white-space:nowrap}
+    .split{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .row-actions button{padding:8px 10px;border-radius:10px}
+    .inputWithBtn{display:flex;gap:8px}
+    .inputWithBtn input{flex:1}
   </style>
 </head>
 
@@ -253,7 +70,7 @@
   <div class="wrap">
     <header>
       <div class="brand">
-        <h1>📱 Control de Stock iPhone — Cloud</h1>
+        <h1>📱 Control de Stock iPhone — Cloud (Neon)</h1>
         <div class="pill">
           <span id="cloudDot" class="dot warn"></span>
           <span id="cloudText">Desconectado</span>
@@ -262,14 +79,11 @@
           <span class="muted">•</span>
           <span class="muted">Vendido congela TC</span>
         </div>
-        <div class="hint" id="netHint"></div>
       </div>
 
       <div class="topbar">
-        <button id="btnLogin" class="primary">🔐 Iniciar sesión</button>
-        <button id="btnLogout" class="danger" disabled>Salir</button>
-        <button id="btnForceServer" disabled>🔄 Forzar servidor</button>
-        <button id="btnDemo" disabled>Cargar demo</button>
+        <input id="appKey" placeholder="Clave de la app (APP_KEY)" style="min-width:260px" />
+        <button id="btnConnect" class="primary">🔌 Conectar</button>
         <button id="btnExportJson" disabled>Export JSON</button>
         <button id="btnImportJson" disabled>Import JSON</button>
         <button id="btnExportCsv" disabled>Export CSV</button>
@@ -281,24 +95,11 @@
       <section class="card">
         <div class="hd">
           <h2>Alta / Edición de equipo</h2>
-
-          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-            <div class="chips" id="calcChips"></div>
-
-            <div style="display:flex; gap:8px; align-items:center">
-              <label style="font-size:12px;color:var(--muted)">Métricas:</label>
-              <select id="statsCurrency" style="width:auto; min-width:170px">
-                <option value="both">ARS + USD</option>
-                <option value="ars">Solo ARS</option>
-                <option value="usd">Solo USD</option>
-              </select>
-            </div>
-          </div>
+          <div class="chips" id="calcChips"></div>
         </div>
 
         <div class="bd">
           <div class="stats" id="stats"></div>
-
           <div style="height:12px"></div>
 
           <form id="form">
@@ -349,10 +150,10 @@
               <div class="field span-6">
                 <label>IMEI / Serie</label>
                 <div class="inputWithBtn">
-                  <input id="imei" placeholder="Escaneá o pegá el IMEI/serie" />
-                  <button type="button" id="btnScanImei">📷 Escanear</button>
+                  <input id="imei" placeholder="Pegá el IMEI/serie" />
+                  <button type="button" id="btnGenImei">🎲 ID</button>
                 </div>
-                <div class="hint">Escaneo: Chrome recomendado. Si no está disponible, te avisa.</div>
+                <div class="hint">Tip: si no usás scanner, tocá “ID” para generar uno interno.</div>
               </div>
 
               <div class="field span-3">
@@ -374,13 +175,12 @@
                   <option value="Reservado">Reservado</option>
                   <option value="Vendido">Vendido</option>
                 </select>
-                <div class="hint">Al pasar a <b>Vendido</b>, se congela el TC automáticamente.</div>
+                <div class="hint">Al pasar a <b>Vendido</b>, se congela el TC.</div>
               </div>
 
               <div class="field span-3">
                 <label>Tipo de cambio global (ARS/USD)</label>
                 <input id="rate" type="number" min="0" step="0.01" placeholder="Ej: 1200" required />
-                <div class="hint">Cambialo cuando quieras: recalcula todo (menos lo vendido).</div>
               </div>
 
               <div class="field span-2">
@@ -423,7 +223,7 @@
         <div class="hd">
           <h2>Stock</h2>
           <div class="toolbar">
-            <div class="field span-4" style="min-width:240px">
+            <div class="field span-6" style="min-width:260px">
               <label>Búsqueda</label>
               <input id="q" placeholder="Modelo, GB, color, IMEI…" />
             </div>
@@ -472,168 +272,36 @@
           <div style="height:10px"></div>
           <div class="split">
             <div class="hint" id="countNote">—</div>
-            <div class="hint" id="syncNote">Iniciá sesión para sincronizar.</div>
+            <div class="hint" id="syncNote">Conectá para sincronizar.</div>
           </div>
         </div>
       </section>
     </div>
   </div>
 
-  <!-- LOGIN modal -->
-  <div class="modal" id="modalLogin">
-    <div class="panel">
-      <div class="ph">
-        <h3>Iniciar sesión</h3>
-        <button class="closex" id="btnCloseLogin">Cerrar</button>
-      </div>
-      <div class="pb">
-        <div class="loginGrid">
-          <div>
-            <div class="row">
-              <div class="field span-12">
-                <label>Email</label>
-                <input id="loginEmail" type="email" placeholder="tuemail@gmail.com" />
-              </div>
-              <div class="field span-12">
-                <label>Contraseña</label>
-                <input id="loginPass" type="password" placeholder="••••••••" />
-              </div>
-            </div>
-            <div class="row-actions">
-              <button class="primary" id="btnDoLogin">Entrar</button>
-              <button id="btnDoRegister">Crear cuenta</button>
-            </div>
-            <div class="hint" id="loginMsg"></div>
-          </div>
-
-          <div class="msg">
-            <b>Si ves “unavailable”:</b><br><br>
-            - Probá <b>otra red</b> (Wi-Fi ↔ datos móviles)<br>
-            - Desactivá <b>VPN / Private DNS / AdBlock</b><br>
-            - Botón <b>🔄 Forzar servidor</b> (arriba)<br><br>
-            Reglas sugeridas:<br>
-            <span class="kbd">match /users/{uid}/{document=**} { allow read, write: if request.auth.uid==uid; }</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Import JSON modal -->
-  <div class="modal" id="modalImport">
-    <div class="panel">
-      <div class="ph">
-        <h3>Importar JSON</h3>
-        <button class="closex" id="btnCloseImport">Cerrar</button>
-      </div>
-      <div class="pb">
-        <p class="hint" style="margin-top:0">
-          Pegá el JSON exportado y tocá <b>Importar</b>. Reemplaza el stock en la nube (para tu usuario).
-        </p>
-        <textarea id="importArea" placeholder='{"settings":{"rate":1200},"items":[...]}'></textarea>
-        <div style="height:10px"></div>
-        <div class="split">
-          <div class="hint">Reemplaza todo.</div>
-          <div class="row-actions">
-            <button class="danger" id="btnDoImport">Importar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scanner modal -->
-  <div class="modal" id="modalScan">
-    <div class="panel">
-      <div class="ph">
-        <h3>Escanear código / IMEI</h3>
-        <div class="row-actions">
-          <button id="btnStopScan">Detener</button>
-          <button class="closex" id="btnCloseScan">Cerrar</button>
-        </div>
-      </div>
-      <div class="pb">
-        <div class="scannerWrap">
-          <div>
-            <video id="video" playsinline></video>
-            <div class="hint">Apuntá al código. Cuando detecte, aparece a la derecha (tocá para usar).</div>
-          </div>
-          <div class="scanBox">
-            <div class="hint">Detectados:</div>
-            <div class="list" id="foundList"></div>
-            <div style="height:10px"></div>
-            <div class="hint" id="scanStatus">—</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script type="module">
+  <script>
     /**********************************************************************
-     * ✅ Firebase Config (TU CONFIG)
-     **********************************************************************/
-    const firebaseConfig = {
-      apiKey: "AIzaSyBRQTpxrP3-0DiRD5N3knn9wGgwYX68H4w",
-      authDomain: "iphonenicolas-9ce07.firebaseapp.com",
-      projectId: "iphonenicolas-9ce07",
-      storageBucket: "iphonenicolas-9ce07.firebasestorage.app",
-      messagingSenderId: "777132865856",
-      appId: "1:777132865856:web:d70ccd9b4684d3dbe6e2a5",
-      measurementId: "G-XM7G2XVV9K"
-    };
-
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged,
-      signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-
-    import {
-      getFirestore, doc, setDoc, getDoc, onSnapshot,
-      enableIndexedDbPersistence, getDocFromServer
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // ✅ Persistencia offline (cache real). Si ya está abierta en otra pestaña, falla y no pasa nada.
-    enableIndexedDbPersistence(db).catch(() => {});
-
-    /**********************************************************************
-     * ✅ State (en un doc por usuario)
+     * ✅ Cloud por Netlify Functions + Neon (Postgres)
+     * - Lee/escribe en /.netlify/functions/stock
+     * - Cache localStorage + refresh automático (para que se actualice en el celu)
      **********************************************************************/
     const state = { settings: { rate: 0 }, items: [] };
-    let uid = null;
-    let unsub = null;
-    let lastFromCache = true;
-    let pendingSave = false;
+    let connected = false;
+    let polling = null;
 
     const $ = (id) => document.getElementById(id);
 
     const cloudDot = $("cloudDot");
     const cloudText = $("cloudText");
     const syncNote = $("syncNote");
-    const netHint = $("netHint");
+    const tcPill = $("tcPill");
 
-    const btnLogin = $("btnLogin");
-    const btnLogout = $("btnLogout");
-    const btnForceServer = $("btnForceServer");
-
-    const btnDemo = $("btnDemo");
+    const appKey = $("appKey");
+    const btnConnect = $("btnConnect");
     const btnExportJson = $("btnExportJson");
     const btnImportJson = $("btnImportJson");
     const btnExportCsv = $("btnExportCsv");
     const btnClear = $("btnClear");
-
-    const modalLogin = $("modalLogin");
-    const btnCloseLogin = $("btnCloseLogin");
-    const loginEmail = $("loginEmail");
-    const loginPass = $("loginPass");
-    const btnDoLogin = $("btnDoLogin");
-    const btnDoRegister = $("btnDoRegister");
-    const loginMsg = $("loginMsg");
 
     const form = $("form");
     const model = $("model");
@@ -655,34 +323,101 @@
     const tbody = $("tbody");
     const stats = $("stats");
     const calcChips = $("calcChips");
-    const tcPill = $("tcPill");
     const q = $("q");
     const filterStatus = $("filterStatus");
     const sortBy = $("sortBy");
     const countNote = $("countNote");
     const saveHint = $("saveHint");
     const btnReset = $("btnReset");
-
-    const modalImport = $("modalImport");
-    const btnCloseImport = $("btnCloseImport");
-    const btnDoImport = $("btnDoImport");
-    const importArea = $("importArea");
-
-    const btnScanImei = $("btnScanImei");
-    const modalScan = $("modalScan");
-    const btnCloseScan = $("btnCloseScan");
-    const btnStopScan = $("btnStopScan");
-    const video = $("video");
-    const foundList = $("foundList");
-    const scanStatus = $("scanStatus");
-
-    const statsCurrency = $("statsCurrency");
+    const btnGenImei = $("btnGenImei");
 
     setEnabled(false);
     if (!dateIn.value) dateIn.value = toISODate(new Date());
     feesArs.value = "0";
 
-    const userDoc = (uid) => doc(db, "users", uid, "app", "stock");
+    // Cache local (para abrir rápido)
+    const CACHE_KEY = "iphone_stock_cache_v1";
+    const cached = loadCache();
+    if (cached) {
+      state.settings = cached.settings || { rate: 0 };
+      state.items = Array.isArray(cached.items) ? cached.items : [];
+      rate.value = state.settings.rate || "";
+      render();
+      setCloudStatus("warn", "Cache");
+      syncNote.textContent = "Mostrando cache. Conectá para actualizar.";
+    } else {
+      render();
+    }
+
+    btnConnect.addEventListener("click", async () => {
+      const key = (appKey.value || "").trim();
+      if (!key) return alert("Pegá tu APP_KEY (la definís en Netlify).");
+
+      localStorage.setItem("APP_KEY_LAST", key);
+      await connectAndStart();
+    });
+
+    // Restaura clave guardada (opcional)
+    const lastKey = localStorage.getItem("APP_KEY_LAST");
+    if (lastKey) appKey.value = lastKey;
+
+    async function connectAndStart(){
+      try {
+        setCloudStatus("warn", "Conectando…");
+        syncNote.textContent = "Conectando…";
+
+        await pullFromCloud(true);
+
+        connected = true;
+        setEnabled(true);
+        setCloudStatus("ok", "Conectado");
+        syncNote.textContent = "✅ Sincronizado";
+
+        // Polling para multi-dispositivo (cada 7s)
+        if (polling) clearInterval(polling);
+        polling = setInterval(() => pullFromCloud(false), 7000);
+
+      } catch (e) {
+        console.error(e);
+        connected = false;
+        setEnabled(false);
+        setCloudStatus("bad", "Error");
+        syncNote.textContent = "❌ No pudo cargar del servidor: " + (e.message || String(e));
+        alert(syncNote.textContent);
+      }
+    }
+
+    async function pullFromCloud(showAlert){
+      const res = await apiGet();
+      // res = { settings, items, updatedAt }
+      if (!res || !res.settings || !Array.isArray(res.items)) throw new Error("Respuesta inválida del servidor");
+      state.settings = res.settings || { rate: 0 };
+      state.items = res.items || [];
+      rate.value = state.settings.rate || "";
+      saveCache({ settings: state.settings, items: state.items });
+      render();
+      if (showAlert) {} // no alert por defecto
+    }
+
+    let saveTimer = null;
+    function saveCloudDebounced(){
+      if (!connected) return;
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => {
+        try {
+          setCloudStatus("warn", "Guardando…");
+          syncNote.textContent = "Guardando…";
+          await apiPut({ settings: state.settings, items: state.items });
+          setCloudStatus("ok", "Conectado");
+          syncNote.textContent = "✅ Guardado";
+          saveCache({ settings: state.settings, items: state.items });
+        } catch (e) {
+          console.error(e);
+          setCloudStatus("bad", "Error");
+          syncNote.textContent = "❌ Error guardando: " + (e.message || String(e));
+        }
+      }, 250);
+    }
 
     function setCloudStatus(kind, text){
       cloudText.textContent = text;
@@ -690,224 +425,24 @@
       cloudDot.classList.add(kind);
     }
 
-    function updateNetHint(){
-      const online = navigator.onLine;
-      netHint.textContent = online
-        ? (lastFromCache ? "📵 Estás en cache/offline (no llega al servidor)." : "🌐 Servidor OK.")
-        : "📴 Sin internet (modo offline).";
-    }
-    window.addEventListener("online", updateNetHint);
-    window.addEventListener("offline", updateNetHint);
-
-    /**********************************************************************
-     * ✅ Guardado con retry si hay unavailable
-     **********************************************************************/
-    let saveTimer = null;
-    async function saveCloudDebounced() {
-      if (!uid) return;
-      pendingSave = true;
-
-      syncNote.textContent = "Guardando…";
-      setCloudStatus("warn", "Sincronizando…");
-
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(async () => {
-        try {
-          await setDoc(userDoc(uid), {
-            settings: state.settings,
-            items: state.items,
-            updatedAt: Date.now()
-          }, { merge: true });
-
-          pendingSave = false;
-          syncNote.textContent = "✅ Guardado";
-          setCloudStatus(lastFromCache ? "warn" : "ok", lastFromCache ? "CACHE (sin servidor)" : "SERVIDOR OK");
-          updateNetHint();
-        } catch (e) {
-          console.error(e);
-          const code = e?.code || "";
-          if (code.includes("unavailable")) {
-            syncNote.textContent = "⚠️ Sin servidor (reintenta solo)";
-            setCloudStatus("warn", "CACHE (sin servidor)");
-            lastFromCache = true;
-            updateNetHint();
-            scheduleServerRetry();
-            return;
-          }
-          syncNote.textContent = "❌ Error guardando";
-          setCloudStatus("bad", "Error");
-          alert("Error guardando: " + (e.message || String(e)));
-        }
-      }, 450);
-    }
-
-    /**********************************************************************
-     * ✅ Forzar lectura desde servidor con backoff (soluciona “no aparece”)
-     **********************************************************************/
-    let retryTimer = null;
-    let retryAttempt = 0;
-
-    function scheduleServerRetry(){
-      if (retryTimer) return;
-      retryAttempt = Math.min(retryAttempt + 1, 8);
-      const delay = Math.min(30000, 1000 * Math.pow(2, retryAttempt)); // 1s,2s,4s...30s
-      retryTimer = setTimeout(async () => {
-        retryTimer = null;
-        await forceServerOnce(true);
-      }, delay);
-    }
-
-    async function forceServerOnce(silent=false){
-      if (!uid) return;
-      btnForceServer.disabled = true;
-      const ref = userDoc(uid);
-
-      try {
-        if (!silent) syncNote.textContent = "🔄 Forzando servidor…";
-        await getDocFromServer(ref); // si falla da unavailable
-        retryAttempt = 0;
-        // El onSnapshot va a actualizar solo cuando llegue el server.
-      } catch (e) {
-        console.error(e);
-        const code = e?.code || "";
-        if (code.includes("unavailable")) {
-          lastFromCache = true;
-          setCloudStatus("warn", "CACHE (sin servidor)");
-          syncNote.textContent = "❌ No pudo cargar del servidor: unavailable";
-          updateNetHint();
-          scheduleServerRetry();
-        } else {
-          syncNote.textContent = "❌ No pudo cargar del servidor: " + (e.message || String(e));
-          setCloudStatus("bad", "Error");
-        }
-      } finally {
-        btnForceServer.disabled = false;
-      }
-    }
-
-    btnForceServer.addEventListener("click", () => forceServerOnce(false));
-
-    /**********************************************************************
-     * ✅ UI: Login
-     **********************************************************************/
-    btnLogin.addEventListener("click", () => openModal(modalLogin));
-    btnCloseLogin.addEventListener("click", () => closeModal(modalLogin));
-    modalLogin.addEventListener("click", (e) => { if (e.target === modalLogin) closeModal(modalLogin); });
-
-    btnDoLogin.addEventListener("click", async () => {
-      loginMsg.textContent = "";
-      try {
-        await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPass.value);
-        closeModal(modalLogin);
-      } catch (e) {
-        loginMsg.textContent = "Error: " + (e.message || String(e));
-      }
-    });
-
-    btnDoRegister.addEventListener("click", async () => {
-      loginMsg.textContent = "";
-      try {
-        await createUserWithEmailAndPassword(auth, loginEmail.value.trim(), loginPass.value);
-        closeModal(modalLogin);
-      } catch (e) {
-        loginMsg.textContent = "Error: " + (e.message || String(e));
-      }
-    });
-
-    btnLogout.addEventListener("click", async () => { await signOut(auth); });
-
-    /**********************************************************************
-     * ✅ Auth + Snapshot (incluye metadata para saber si viene de cache)
-     **********************************************************************/
-    onAuthStateChanged(auth, async (user) => {
-      if (unsub) { unsub(); unsub = null; }
-
-      if (!user) {
-        uid = null;
-        setEnabled(false);
-        lastFromCache = true;
-        setCloudStatus("warn", "Desconectado");
-        syncNote.textContent = "Iniciá sesión para sincronizar.";
-        netHint.textContent = "";
-        state.settings = { rate: 0 };
-        state.items = [];
-        rate.value = "";
-        render();
-        return;
-      }
-
-      uid = user.uid;
-      setEnabled(true);
-
-      setCloudStatus("warn", "Conectando…");
-      syncNote.textContent = "Cargando…";
-
-      const ref = userDoc(uid);
-
-      // Crea doc si no existe (con getDoc normal; si está offline igual se maneja)
-      try {
-        const snap = await getDoc(ref);
-        if (!snap.exists()) {
-          await setDoc(ref, { settings: { rate: 0 }, items: [], createdAt: Date.now() }, { merge: true });
-        }
-      } catch (e) {
-        // si está offline/unavailable, no frenamos. El snapshot mostrará cache.
-      }
-
-      unsub = onSnapshot(ref, { includeMetadataChanges: true }, (docSnap) => {
-        const data = docSnap.data() || {};
-        state.settings = data.settings || { rate: 0 };
-        state.items = Array.isArray(data.items) ? data.items : [];
-
-        rate.value = state.settings.rate || "";
-
-        lastFromCache = !!docSnap.metadata.fromCache;
-
-        if (lastFromCache) {
-          setCloudStatus("warn", "CACHE (sin servidor)");
-          syncNote.textContent = pendingSave ? "⏳ Pendiente de subir" : "📦 Mostrando cache";
-          scheduleServerRetry(); // reintenta hasta que el server responda
-        } else {
-          setCloudStatus("ok", "SERVIDOR OK");
-          syncNote.textContent = pendingSave ? "⏳ Guardando…" : "✅ Sincronizado";
-          retryAttempt = 0;
-        }
-
-        updateNetHint();
-        render();
-      }, (err) => {
-        console.error(err);
-        lastFromCache = true;
-        setCloudStatus("warn", "CACHE (sin servidor)");
-        syncNote.textContent = "❌ Error de sincronización";
-        updateNetHint();
-        scheduleServerRetry();
-      });
-
-      // Forzamos una lectura del servidor apenas entra (si falla, reintenta)
-      await forceServerOnce(true);
-    });
-
     function setEnabled(on){
-      [btnLogout, btnForceServer, btnDemo, btnExportJson, btnImportJson, btnExportCsv, btnClear].forEach(b => b.disabled = !on);
-      btnLogin.disabled = on;
-
+      [btnExportJson, btnImportJson, btnExportCsv, btnClear].forEach(b => b.disabled = !on);
       Array.from(form.querySelectorAll("input,select,button")).forEach(el => el.disabled = !on);
       q.disabled = !on;
       filterStatus.disabled = !on;
       sortBy.disabled = !on;
-      statsCurrency.disabled = !on;
+      appKey.disabled = on; // bloquea la clave cuando conecta
+      btnConnect.disabled = on;
     }
 
     /**********************************************************************
-     * ✅ TC CONGELADO EN VENDIDO
+     * ✅ TC congelado en Vendido
      **********************************************************************/
     function effectiveRateFor(it){
       const globalR = num(rate.value) || num(state.settings.rate) || 0;
       if (it.status === "Vendido" && num(it.soldRate) > 0) return num(it.soldRate);
       return globalR;
     }
-
     function calcWithRate(it) {
       const r = effectiveRateFor(it);
       const cArs = (it.costUsd || 0) * r;
@@ -936,21 +471,18 @@
       `;
     }
 
-    ["input","change"].forEach(ev => rate.addEventListener(ev, async () => {
+    ["input","change"].forEach(ev => rate.addEventListener(ev, () => {
       state.settings.rate = num(rate.value);
       recalcChips();
       render();
-      await saveCloudDebounced();
+      saveCloudDebounced();
     }));
-
-    ["input","change"].forEach(ev => {
-      [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener(ev, recalcChips));
-    });
+    ["input","change"].forEach(ev => [costUsd, priceUsd, feesArs].forEach(el => el.addEventListener(ev, recalcChips)));
 
     /**********************************************************************
-     * ✅ Guardar item: congela TC si pasa a Vendido
+     * ✅ Guardar / editar
      **********************************************************************/
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       saveHint.textContent = "";
 
@@ -966,12 +498,13 @@
         saveHint.textContent = "✅ Equipo agregado al stock.";
       }
 
-      await saveCloudDebounced();
+      saveCloudDebounced();
       resetForm(false);
       render();
     });
 
     btnReset.addEventListener("click", () => resetForm(true));
+    btnGenImei.addEventListener("click", () => { imei.value = cryptoId(); });
 
     function resetForm(clearRate) {
       editingId.value = "";
@@ -986,14 +519,20 @@
 
     function buildItemFromForm() {
       const globalR = num(rate.value);
-      if (!uid) { alert("Iniciá sesión para usar la app."); return null; }
+      if (!connected) {
+        alert("Conectá primero (APP_KEY).");
+        return null;
+      }
       if (!model.value || !storage.value || !color.value || !globalR) {
         alert("Completá: Modelo, GB, Color y Tipo de cambio.");
         return null;
       }
       const cUSD = num(costUsd.value);
       const pUSD = num(priceUsd.value);
-      if (cUSD <= 0 || pUSD <= 0) { alert("Costo USD y Precio USD deben ser mayores a 0."); return null; }
+      if (cUSD <= 0 || pUSD <= 0) {
+        alert("Costo USD y Precio USD deben ser mayores a 0.");
+        return null;
+      }
 
       const isEditing = !!editingId.value;
       const prev = isEditing ? state.items.find(x => x.id === editingId.value) : null;
@@ -1029,8 +568,8 @@
         priceUsd: pUSD,
         feesArs: num(feesArs.value),
         notes: notes.value.trim(),
-        soldRate: soldRate,
-        soldAt: soldAt,
+        soldRate,
+        soldAt,
         updatedAt: Date.now()
       };
     }
@@ -1053,7 +592,6 @@
       priceUsd.value = it.priceUsd;
       feesArs.value = it.feesArs || 0;
       notes.value = it.notes || "";
-
       window.scrollTo({ top: 0, behavior: "smooth" });
       saveHint.textContent = it.status === "Vendido" && num(it.soldRate) > 0
         ? `✏️ Editando vendido (TC congelado: ${fmtARS(num(it.soldRate))}).`
@@ -1061,18 +599,17 @@
       recalcChips();
     }
 
-    async function delItem(id) {
+    function delItem(id) {
       const it = state.items.find(x => x.id === id);
       if (!it) return;
       const ok = confirm(`¿Borrar "${it.model} ${it.storageGB}GB ${it.color}"?`);
       if (!ok) return;
-
       state.items = state.items.filter(x => x.id !== id);
-      await saveCloudDebounced();
+      saveCloudDebounced();
       render();
     }
 
-    async function toggleStatus(id) {
+    function toggleStatus(id) {
       const it = state.items.find(x => x.id === id);
       if (!it) return;
 
@@ -1088,12 +625,12 @@
       it.status = next;
       it.updatedAt = Date.now();
 
-      await saveCloudDebounced();
+      saveCloudDebounced();
       render();
     }
 
     /**********************************************************************
-     * ✅ Render / stats / filters
+     * ✅ Render
      **********************************************************************/
     function applyQuerySort(items) {
       const qq = (q.value || "").trim().toLowerCase();
@@ -1115,11 +652,8 @@
         if (key === "dateIn") { av = a.dateIn || ""; bv = b.dateIn || ""; }
         else if (key === "profit") { av = calcWithRate(a).gArs; bv = calcWithRate(b).gArs; }
         else if (key === "price") { av = a.priceUsd; bv = b.priceUsd; }
-        else if (key === "model") {
-          av = (a.model + " " + a.storageGB).toLowerCase();
-          bv = (b.model + " " + b.storageGB).toLowerCase();
-        } else { av = a.updatedAt; bv = b.updatedAt; }
-
+        else if (key === "model") { av = (a.model + " " + a.storageGB).toLowerCase(); bv = (b.model + " " + b.storageGB).toLowerCase(); }
+        else { av = a.updatedAt; bv = b.updatedAt; }
         if (av < bv) return asc ? -1 : 1;
         if (av > bv) return asc ? 1 : -1;
         return 0;
@@ -1148,18 +682,9 @@
             </td>
             <td class="mini">${imeiTxt}</td>
             <td>${badgeFor(it.status)}</td>
-            <td>
-              <div class="money"><b>${fmtUSD(it.costUsd)}</b></div>
-              <div class="mini money">${fmtARS(cArs)}</div>
-            </td>
-            <td>
-              <div class="money"><b>${fmtUSD(it.priceUsd)}</b></div>
-              <div class="mini money">${fmtARS(pArs)}</div>
-            </td>
-            <td>
-              <span class="badge ${profitClass}">${fmtARS(gArs)}</span>
-              <div class="mini money">${fmtUSD(gUsd)}</div>
-            </td>
+            <td><div class="money"><b>${fmtUSD(it.costUsd)}</b></div><div class="mini money">${fmtARS(cArs)}</div></td>
+            <td><div class="money"><b>${fmtUSD(it.priceUsd)}</b></div><div class="mini money">${fmtARS(pArs)}</div></td>
+            <td><span class="badge ${profitClass}">${fmtARS(gArs)}</span><div class="mini money">${fmtUSD(gUsd)}</div></td>
             <td class="mini">${escapeHtml(it.dateIn || "—")}</td>
             <td>
               <div class="row-actions">
@@ -1184,36 +709,27 @@
       const sold = items.filter(x => x.status === "Vendido");
       const notSold = [...avail, ...reserved];
 
-      const mode = statsCurrency?.value || "both";
-      const sum = (arr, fn) => arr.reduce((acc, it) => acc + fn(calcWithRate(it), it), 0);
+      const sumCalc = (arr, selector) => arr.reduce((acc, it) => acc + selector(calcWithRate(it), it), 0);
 
-      const investedARS = sum(notSold, (c) => c.cArs);
-      const investedUSD = sum(notSold, (c, it) => num(it.costUsd || 0));
+      const investedARS = sumCalc(notSold, (c) => c.cArs);
+      const potentialProfitARS = sumCalc(notSold, (c) => c.gArs);
+      const soldProfitARS = sumCalc(sold, (c) => c.gArs);
+      const soldRevenueARS = sumCalc(sold, (c) => c.pArs);
 
-      const potProfitARS = sum(notSold, (c) => c.gArs);
-      const potProfitUSD = sum(notSold, (c) => c.gUsd);
-
-      const soldRevenueARS = sum(sold, (c) => c.pArs);
-      const soldRevenueUSD = sum(sold, (c, it) => num(it.priceUsd || 0));
-
-      const soldProfitARS = sum(sold, (c) => c.gArs);
-      const soldProfitUSD = sum(sold, (c) => c.gUsd);
-
-      const moneyView = (ars, usd) => {
-        if (mode === "ars") return `<div class="money">${fmtARS(ars)}</div>`;
-        if (mode === "usd") return `<div class="money">${fmtUSD(usd)}</div>`;
-        return `<div class="money">${fmtARS(ars)}</div><div class="mini money">${fmtUSD(usd)}</div>`;
-      };
+      // USD
+      const investedUSD = notSold.reduce((a,it)=>a+num(it.costUsd||0),0);
+      const potentialProfitUSD = sumCalc(notSold, (c)=>c.gUsd);
+      const soldProfitUSD = sumCalc(sold, (c)=>c.gUsd);
+      const soldRevenueUSD = sold.reduce((a,it)=>a+num(it.priceUsd||0),0);
 
       stats.innerHTML = `
         ${stat("Disponibles", avail.length, "En stock")}
         ${stat("Reservados", reserved.length, "Pendientes")}
         ${stat("Vendidos", sold.length, "TC congelado")}
-        ${stat("Invertido", moneyView(investedARS, investedUSD), "Disp + reserv")}
-        ${stat("Ganancia potencial", moneyView(potProfitARS, potProfitUSD), "Disp + reserv")}
-        ${stat("Ganancia vendida", moneyView(soldProfitARS, soldProfitUSD), "Histórico")}
-        ${stat("Facturación vendida", moneyView(soldRevenueARS, soldRevenueUSD), "Histórico")}
-        ${stat("Registros", items.length, "Total")}
+        ${stat("Invertido", `${fmtARS(investedARS)}<div class="mini money">${fmtUSD(investedUSD)}</div>`, "Disp + reserv")}
+        ${stat("Ganancia potencial", `${fmtARS(potentialProfitARS)}<div class="mini money">${fmtUSD(potentialProfitUSD)}</div>`, "Disp + reserv")}
+        ${stat("Ganancia vendida", `${fmtARS(soldProfitARS)}<div class="mini money">${fmtUSD(soldProfitUSD)}</div>`, "Histórico")}
+        ${stat("Facturación vendida", `${fmtARS(soldRevenueARS)}<div class="mini money">${fmtUSD(soldRevenueUSD)}</div>`, "Histórico")}
       `;
     }
 
@@ -1232,7 +748,6 @@
         </div>
       `;
     }
-
     function badgeFor(st) {
       if (st === "Disponible") return `<span class="badge b-ok">Disponible</span>`;
       if (st === "Reservado") return `<span class="badge b-warn">Reservado</span>`;
@@ -1240,10 +755,9 @@
     }
 
     [q, filterStatus, sortBy].forEach(el => { el.addEventListener("input", render); el.addEventListener("change", render); });
-    statsCurrency.addEventListener("change", render);
 
     /**********************************************************************
-     * ✅ Export / Import / Demo / Clear
+     * ✅ Export / Import / Clear
      **********************************************************************/
     btnExportJson.addEventListener("click", () => {
       const payload = JSON.stringify({ settings: state.settings, items: state.items }, null, 2);
@@ -1257,152 +771,60 @@
       downloadText(csv, `stock-${toISODate(new Date())}.csv`, "text/csv");
     });
 
-    btnImportJson.addEventListener("click", () => { importArea.value = ""; openModal(modalImport); });
-    btnCloseImport.addEventListener("click", () => closeModal(modalImport));
-    modalImport.addEventListener("click", (e) => { if (e.target === modalImport) closeModal(modalImport); });
-
-    btnDoImport.addEventListener("click", async () => {
+    btnImportJson.addEventListener("click", async () => {
+      const txt = prompt("Pegá el JSON exportado (reemplaza todo):");
+      if (!txt) return;
       try {
-        const data = JSON.parse(importArea.value);
-        if (!data || !Array.isArray(data.items)) throw new Error("Formato inválido. Debe tener {settings, items}.");
-        state.items = data.items;
-        state.settings = data.settings || state.settings || { rate: 0 };
-        rate.value = state.settings.rate || rate.value || "";
-        await saveCloudDebounced();
-        closeModal(modalImport);
+        const data = JSON.parse(txt);
+        if (!data || !Array.isArray(data.items)) throw new Error("Formato inválido");
+        state.settings = data.settings || { rate: 0 };
+        state.items = data.items || [];
+        rate.value = state.settings.rate || "";
         render();
-        alert("✅ Importado.");
-      } catch (err) {
-        alert("Error al importar: " + (err.message || String(err)));
+        saveCloudDebounced();
+      } catch (e) {
+        alert("Error importando: " + (e.message || String(e)));
       }
     });
 
-    btnClear.addEventListener("click", async () => {
-      const ok = confirm("Esto borra TODO el stock (para tu usuario). ¿Continuar?");
+    btnClear.addEventListener("click", () => {
+      const ok = confirm("Esto borra TODO el stock en la nube. ¿Continuar?");
       if (!ok) return;
       state.items = [];
       state.settings = { rate: num(rate.value) || 0 };
-      await saveCloudDebounced();
       render();
+      saveCloudDebounced();
     });
-
-    btnDemo.addEventListener("click", async () => {
-      const ok = confirm("¿Cargar datos demo? (Agrega arriba, no borra)");
-      if (!ok) return;
-
-      const r = num(rate.value) || 1200;
-      state.settings.rate = r;
-      rate.value = r;
-
-      const demo = [
-        mk("iPhone 13",128,"Blue",100,"Excelente","","Mayorista","Disponible", 330, 380, 0, "Con caja"),
-        mk("iPhone 14 Pro",128,"Black",92,"Excelente","","Canje","Reservado", 420, 480, 6000, "Garantía 30 días"),
-        mk("iPhone 15 Pro Max",256,"Natural Titanium",88,"Muy buena","","Mayorista","Disponible", 720, 780, 0, ""),
-        mk("iPhone 11",64,"White",79,"Buena","","Particular","Vendido", 170, 220, 5000, "Probado antes de pagar", r),
-      ];
-      state.items = [...demo, ...state.items];
-      await saveCloudDebounced();
-      render();
-    });
-
-    function mk(model,gb,color,batt,cond,imei,supp,st,cusd,pusd,fees,notes, frozenRate=null){
-      const obj = {
-        id: cryptoId(),
-        model, storageGB: gb, color,
-        battery: batt, condition: cond,
-        imei: imei || "", supplier: supp || "",
-        status: st, dateIn: toISODate(new Date()),
-        costUsd: cusd, priceUsd: pusd, feesArs: fees,
-        notes: notes || "",
-        updatedAt: Date.now(),
-        soldRate: null,
-        soldAt: null,
-      };
-      if (st === "Vendido") {
-        obj.soldRate = num(frozenRate) || num(rate.value) || 0;
-        obj.soldAt = Date.now();
-      }
-      return obj;
-    }
 
     /**********************************************************************
-     * ✅ Scanner (BarcodeDetector)
+     * ✅ API Netlify Functions
      **********************************************************************/
-    function openModal(m){ m.classList.add("open"); }
-    function closeModal(m){ m.classList.remove("open"); }
-
-    let stream = null;
-    let detector = null;
-    let scanTimer = null;
-    const seen = new Set();
-
-    btnScanImei.addEventListener("click", async () => {
-      try {
-        if (!("mediaDevices" in navigator) || !navigator.mediaDevices.getUserMedia) {
-          alert("Este navegador no permite cámara.");
-          return;
-        }
-        if (!("BarcodeDetector" in window)) {
-          alert("Tu navegador no soporta escaneo nativo. Probá Chrome en Android/PC.");
-          return;
-        }
-
-        detector = new BarcodeDetector({ formats: ["qr_code","code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","data_matrix","pdf417"] });
-
-        openModal(modalScan);
-        foundList.innerHTML = "";
-        scanStatus.textContent = "Iniciando cámara…";
-        seen.clear();
-
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
-        video.srcObject = stream;
-        await video.play();
-        scanStatus.textContent = "Escaneando…";
-
-        scanLoop();
-      } catch (err) {
-        console.error(err);
-        alert("No se pudo iniciar el escaneo: " + (err.message || String(err)));
-        stopScan();
-      }
-    });
-
-    btnStopScan.addEventListener("click", stopScan);
-    btnCloseScan.addEventListener("click", () => { stopScan(); closeModal(modalScan); });
-    modalScan.addEventListener("click", (e) => { if (e.target === modalScan) { stopScan(); closeModal(modalScan); } });
-
-    function stopScan(){
-      if (scanTimer) { cancelAnimationFrame(scanTimer); scanTimer = null; }
-      if (video) video.pause();
-      if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-      scanStatus.textContent = "Detenido.";
-    }
-
-    async function scanLoop(){
-      if (!detector || !video || video.readyState < 2) { scanTimer = requestAnimationFrame(scanLoop); return; }
-      try {
-        const barcodes = await detector.detect(video);
-        for (const bc of barcodes) {
-          const raw = (bc.rawValue || "").trim();
-          if (!raw || seen.has(raw)) continue;
-          seen.add(raw);
-          addFound(raw);
-          scanStatus.textContent = `Detectado: ${raw}`;
-        }
-      } catch (e) {}
-      scanTimer = requestAnimationFrame(scanLoop);
-    }
-
-    function addFound(value){
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = value;
-      btn.addEventListener("click", () => {
-        imei.value = value;
-        stopScan();
-        closeModal(modalScan);
+    async function apiGet(){
+      const res = await fetch("/.netlify/functions/stock", {
+        method: "GET",
+        headers: { "x-app-key": (appKey.value || "").trim() }
       });
-      foundList.prepend(btn);
+      if (!res.ok) {
+        const t = await res.text().catch(()=> "");
+        throw new Error(`${res.status} ${res.statusText} ${t}`.trim());
+      }
+      return await res.json();
+    }
+
+    async function apiPut(payload){
+      const res = await fetch("/.netlify/functions/stock", {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+          "x-app-key": (appKey.value || "").trim()
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const t = await res.text().catch(()=> "");
+        throw new Error(`${res.status} ${res.statusText} ${t}`.trim());
+      }
+      return await res.json();
     }
 
     /**********************************************************************
@@ -1412,31 +834,12 @@
       const n = Number(String(v).replace(",", "."));
       return Number.isFinite(n) ? n : 0;
     }
-    function clampInt(n, min, max){
-      n = Math.round(n);
-      return Math.max(min, Math.min(max, n));
-    }
-    function fmtARS(n){
-      const v = Number.isFinite(n) ? n : 0;
-      return v.toLocaleString("es-AR", { style:"currency", currency:"ARS", maximumFractionDigits: 0 });
-    }
-    function fmtUSD(n){
-      const v = Number.isFinite(n) ? n : 0;
-      return v.toLocaleString("es-AR", { style:"currency", currency:"USD", maximumFractionDigits: 2 });
-    }
-    function toISODate(d){
-      const z = new Date(d);
-      const y = z.getFullYear();
-      const m = String(z.getMonth()+1).padStart(2,"0");
-      const day = String(z.getDate()).padStart(2,"0");
-      return `${y}-${m}-${day}`;
-    }
-    function cryptoId(){
-      return (crypto?.randomUUID ? crypto.randomUUID() : ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16)));
-    }
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
-    }
+    function clampInt(n, min, max){ n = Math.round(n); return Math.max(min, Math.min(max, n)); }
+    function fmtARS(n){ const v = Number.isFinite(n) ? n : 0; return v.toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}); }
+    function fmtUSD(n){ const v = Number.isFinite(n) ? n : 0; return v.toLocaleString("es-AR",{style:"currency",currency:"USD",maximumFractionDigits:2}); }
+    function toISODate(d){ const z = new Date(d); const y=z.getFullYear(); const m=String(z.getMonth()+1).padStart(2,"0"); const day=String(z.getDate()).padStart(2,"0"); return `${y}-${m}-${day}`; }
+    function cryptoId(){ return (crypto?.randomUUID ? crypto.randomUUID() : ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16))); }
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
     function downloadText(text, filename, mime){
       const blob = new Blob([text], { type: mime });
       const a = document.createElement("a");
@@ -1445,17 +848,19 @@
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
     }
     function csvCell(v){
       const s = v === null || v === undefined ? "" : String(v);
       const escaped = s.replace(/"/g,'""');
       return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
     }
+    function saveCache(obj){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ ...obj, cachedAt: Date.now() })); } catch(e){} }
+    function loadCache(){ try{ const raw = localStorage.getItem(CACHE_KEY); return raw ? JSON.parse(raw) : null; } catch(e){ return null; } }
 
-    // First render
+    // Init UI
+    recalcChips();
     render();
-    updateNetHint();
   </script>
 </body>
 </html>
